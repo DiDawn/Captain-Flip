@@ -1,6 +1,7 @@
 import pygame
 import ctypes
-from menus import HomeMenu
+from menus import LoginMenu, HomeMenu
+
 
 # init pygame module
 pygame.init()
@@ -10,7 +11,8 @@ user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 background_colour = (0, 0, 0)
-HOME_MENU = 0
+LOGIN_MENU = 0
+HOME_MENU = 1
 
 # define dimension of pygame screen (width,height)
 screen = pygame.display.set_mode(screensize)
@@ -25,11 +27,12 @@ screen.fill(background_colour)
 pygame.display.flip()
 
 # init home_screen
-home_menu = HomeMenu(screensize)
-game_state = HOME_MENU
+login_menu = HomeMenu(screensize)
+game_state = LOGIN_MENU
 
 # Variable to keep our game loop running
 running = True
+screen.blit(login_menu, (0, 0))
 
 # game loop
 while running:
@@ -41,8 +44,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         else:
-            if game_state == HOME_MENU:
-                home_menu.event_handler(event)
+            if game_state == LOGIN_MENU:
+                login_menu.event_handler(event)
 
-    screen.blit(home_menu, (0, 0))
+    # only update the parchment part since the background is static
+    screen.blit(login_menu, login_menu.parchment_image.rect.topleft, login_menu.parchment_image.rect)
     pygame.display.flip()
