@@ -1,6 +1,7 @@
 import pygame
 import ctypes
-from menus import LoginMenu, HomeMenu
+from menus import LoginMenu, HomeMenu, FirstMenu
+from time import time
 
 
 # init pygame module
@@ -11,8 +12,9 @@ user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 background_colour = (0, 0, 0)
-LOGIN_MENU = 0
-HOME_MENU = 1
+FIRST_MENU = 0
+LOGIN_MENU = 1
+HOME_MENU = 2
 
 # define dimension of pygame screen (width,height)
 screen = pygame.display.set_mode(screensize)
@@ -27,13 +29,14 @@ screen.fill(background_colour)
 pygame.display.flip()
 
 # init home_screen
-login_menu = HomeMenu(screensize)
+current_menu = LoginMenu(screensize)
 game_state = LOGIN_MENU
 
 # Variable to keep our game loop running
 running = True
-screen.blit(login_menu, (0, 0))
-
+screen.blit(current_menu, (0, 0))
+time0 = time()
+fps_a = []
 # game loop
 while running:
 
@@ -45,8 +48,22 @@ while running:
             running = False
         else:
             if game_state == LOGIN_MENU:
-                login_menu.event_handler(event)
+                current_menu.event_handler(event)
+            if game_state == HOME_MENU or game_state == FIRST_MENU or game_state == LOGIN_MENU:
+                # only update the parchment part since the background is static
+                screen.blit(current_menu, current_menu.parchment_image.rect.topleft, current_menu.parchment_image.rect)
+            else:
+                screen.blit(current_menu, (0, 0))
 
-    # only update the parchment part since the background is static
-    screen.blit(login_menu, login_menu.parchment_image.rect.topleft, login_menu.parchment_image.rect)
     pygame.display.flip()
+
+    # show fps
+    delta = time() - time0
+    fps = 1/delta if delta != 0 else 1200
+    length = len(fps_a)
+    if length != 1000:
+        fps_a.append(fps)
+    else:
+        print(sum(fps_a)/length)
+        fps_a = []
+    time0 = time()
