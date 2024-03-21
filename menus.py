@@ -1,7 +1,7 @@
-import pygame
 from widgets import Image, Button, InputBox
 from pygame.locals import *
 from database import Database
+from parameters import *
 
 
 class MenuBackground(pygame.Surface):
@@ -9,7 +9,7 @@ class MenuBackground(pygame.Surface):
     This class is used to create a background for the menu
     """
 
-    def __init__(self, size: tuple[float, float], with_parchment=True):
+    def __init__(self, size: tuple[float, float], with_parchment=True, pre_menu_event=None):
         super().__init__(size)
 
         self.buttons = []
@@ -44,17 +44,16 @@ class MenuBackground(pygame.Surface):
             self.parchment_image = self.parchment_image.resize(scale_factor)
 
             # set positions of the parchment
-            self.parchment_image.set_position((size[0] // 2 - self.parchment_image.rect.w,
-                                               size[1] // 1.5 - self.parchment_image.rect.h))
+            self.parchment_image.set_position((size[0] // 2 - self.parchment_image.rect.w // 2,
+                                               size[1] // 1.5 - self.parchment_image.rect.h // 2))
 
             # copy the image on the surface
             self.blit(self.parchment_image, self.parchment_image.rect.topleft)
 
         # add close button
-        self.close_button = Button(self, "assets/buttons/x.png", call=lambda : (pygame.quit(), exit(0)),
+        self.close_button = Button(self, "assets/buttons/x.png", call=lambda: (pygame.quit(), exit(0)),
                                    convert_alpha=True)
-        self.close_button_hover = Button(self, "assets/buttons/x_hover.png", call=lambda : (pygame.quit(), exit(0)),
-                                         convert_alpha=True)
+        self.close_button_hover = Image(self, "assets/buttons/x_hover.png", convert_alpha=True)
         scale_factor = (size[0] // 20) / self.close_button.rect.w
         self.close_button = self.close_button.resize(scale_factor)
         self.close_button_hover = self.close_button_hover.resize(scale_factor)
@@ -64,6 +63,20 @@ class MenuBackground(pygame.Surface):
         self.buttons.append(self.close_button)
         self.hover_dict[self.close_button.hashed] = self.close_button_hover
         self.blit(self.close_button, self.close_button.rect.topleft)
+
+        if pre_menu_event is not None:
+            self.backward_button = Button(self, "assets/buttons/left_arrow.png", call=lambda: pygame.event.post(
+                pygame.event.Event(pre_menu_event)), convert_alpha=True)
+            self.backward_button_hover = Image(self, "assets/buttons/left_arrow_hover.png", convert_alpha=True)
+            scale_factor = (size[0] // 10) / self.backward_button.rect.w
+            self.backward_button = self.backward_button.resize(scale_factor)
+            self.backward_button_hover = self.backward_button_hover.resize(scale_factor)
+            self.backward_button.set_position((self.backward_button.rect.w // 2, self.backward_button.rect.h // 2))
+            self.backward_button_hover.set_position((self.backward_button.rect.w // 2, self.backward_button.rect.h // 2))
+
+            self.buttons.append(self.backward_button)
+            self.hover_dict[self.backward_button.hashed] = self.backward_button_hover
+            self.blit(self.backward_button, self.backward_button.rect.topleft)
 
     def button_event_handler(self, event):
         if event.type == MOUSEBUTTONDOWN:
@@ -89,8 +102,11 @@ class FirstMenu(MenuBackground):
         super().__init__(size)
 
         # load images for buttons
-        self.login_button = Button(self, "assets/buttons/login.png", call=lambda: print("login"), convert_alpha=True)
-        self.register_button = Button(self, "assets/buttons/register.png", call=lambda: print("register"),
+        self.login_button = Button(self, "assets/buttons/login.png",
+                                   call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_LOGIN)),
+                                   convert_alpha=True)
+        self.register_button = Button(self, "assets/buttons/register.png",
+                                      call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_REGISTER)),
                                       convert_alpha=True)
         self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
                                   convert_alpha=True)
@@ -149,7 +165,7 @@ class FirstMenu(MenuBackground):
 
 class HomeMenu(MenuBackground):
     def __init__(self, size: tuple[float, float]):
-        super().__init__(size)
+        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
         self.hover_dict = {}
 
@@ -214,9 +230,10 @@ class HomeMenu(MenuBackground):
 
 class LoginMenu(MenuBackground):
     def __init__(self, size, mode):
-        super().__init__(size)
+        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
-        self.db = Database("")
+        self.db = Database("database.csv")
+        self.mode = mode
 
         # rotate parchment
         self.parchment_image = self.parchment_image.rotate(90)
@@ -234,10 +251,13 @@ class LoginMenu(MenuBackground):
         self.blit(self.sea_image, self.sea_image.rect.topleft)
         self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
         self.blit(self.parchment_image, self.parchment_image.rect.topleft)
+        self.blit(self.close_button, self.close_button.rect.topleft)
+        self.blit(self.backward_button, self.backward_button.rect.topleft)
 
         if mode == "login":
             # place login button
-            self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(), convert_alpha=True)
+            self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(),
+                                       convert_alpha=True)
             self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
             scale_factor = (self.parchment_image.rect.w // 7.5) / 130
             self.login_button = self.login_button.resize(scale_factor)
@@ -252,7 +272,8 @@ class LoginMenu(MenuBackground):
             self.blit(self.login_button, self.login_button.rect.topleft)
         else:
             # place register button
-            self.register_button = Button(self, "assets/buttons/register.png", call=lambda: self.login(), convert_alpha=True)
+            self.register_button = Button(self, "assets/buttons/register.png", call=lambda: self.register(),
+                                          convert_alpha=True)
             self.register_button_hover = Image(self, "assets/buttons/register_hover.png", convert_alpha=True)
             scale_factor = (self.parchment_image.rect.w // 7.5) / 130
             self.register_button = self.register_button.resize(scale_factor)
@@ -264,6 +285,7 @@ class LoginMenu(MenuBackground):
             self.register_button.set_position(register_button_pos)
             self.register_button_hover.set_position(register_button_pos)
             self.buttons.append(self.register_button)
+
             self.blit(self.register_button, self.register_button.rect.topleft)
 
         # initialize boxes
@@ -272,8 +294,8 @@ class LoginMenu(MenuBackground):
                     self.parchment_image.rect.y + self.parchment_image.rect.h // 2.75 - boxes_h // 2)
         box2_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 2 - boxes_w // 2,
                     self.parchment_image.rect.y + self.parchment_image.rect.h // 2 - boxes_h // 2)
-        self.input_box_username = InputBox(box1_pos[0], box1_pos[1], boxes_w, boxes_h)
-        self.input_box_password = InputBox(box2_pos[0], box2_pos[1], boxes_w, boxes_h)
+        self.input_box_username = InputBox(box1_pos[0], box1_pos[1], boxes_w, boxes_h, under_text="Username")
+        self.input_box_password = InputBox(box2_pos[0], box2_pos[1], boxes_w, boxes_h, under_text="Password")
         self.input_boxes = [self.input_box_username, self.input_box_password]
 
     def login(self):
@@ -284,6 +306,12 @@ class LoginMenu(MenuBackground):
             print("logged in")
         else:
             print("wrong username or password")
+
+    def register(self):
+        username = self.input_box_username.text
+        password = self.input_box_password.text
+
+        self.db.sign_up(username, password)
 
     def event_handler(self, event):
         self.button_event_handler(event)
@@ -296,12 +324,13 @@ class LoginMenu(MenuBackground):
         for box in self.input_boxes:
             box.draw(self)
 
-        if self.login_button.hover:
-            self.blit(self.login_button_hover, self.login_button.rect.topleft)
+        if self.mode == "login":
+            if self.login_button.hover:
+                self.blit(self.login_button_hover, self.login_button.rect.topleft)
+            else:
+                self.blit(self.login_button, self.login_button.rect.topleft)
         else:
-            self.blit(self.login_button, self.login_button.rect.topleft)
-        if self.close_button.hover:
-            self.blit(self.close_button_hover, self.close_button.rect.topleft)
-        else:
-            self.blit(self.close_button, self.close_button.rect.topleft)
-
+            if self.register_button.hover:
+                self.blit(self.register_button_hover, self.register_button.rect.topleft)
+            else:
+                self.blit(self.register_button, self.register_button.rect.topleft)
