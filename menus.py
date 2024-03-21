@@ -1,6 +1,7 @@
 import pygame
 from widgets import Image, Button, InputBox
 from pygame.locals import *
+from database import Database
 
 
 class MenuBackground(pygame.Surface):
@@ -212,8 +213,10 @@ class HomeMenu(MenuBackground):
 
 
 class LoginMenu(MenuBackground):
-    def __init__(self, size):
+    def __init__(self, size, mode):
         super().__init__(size)
+
+        self.db = Database("")
 
         # rotate parchment
         self.parchment_image = self.parchment_image.rotate(90)
@@ -232,20 +235,36 @@ class LoginMenu(MenuBackground):
         self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
         self.blit(self.parchment_image, self.parchment_image.rect.topleft)
 
-        # place login button
-        self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(), convert_alpha=True)
-        self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
-        scale_factor = (self.parchment_image.rect.w // 7.5) / 130
-        self.login_button = self.login_button.resize(scale_factor)
-        self.login_button_hover = self.login_button_hover.resize(scale_factor)
-        self.hover_dict[self.login_button.hashed] = self.login_button_hover
-        login_button_pos = (
-            self.parchment_image.rect.w // 2 - self.login_button.rect.w // 2 + self.parchment_image.rect.x,
-            self.parchment_image.rect.h // 1.70 + self.parchment_image.rect.y)
-        self.login_button.set_position(login_button_pos)
-        self.login_button_hover.set_position(login_button_pos)
-        self.buttons.append(self.login_button)
-        self.blit(self.login_button, self.login_button.rect.topleft)
+        if mode == "login":
+            # place login button
+            self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(), convert_alpha=True)
+            self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
+            scale_factor = (self.parchment_image.rect.w // 7.5) / 130
+            self.login_button = self.login_button.resize(scale_factor)
+            self.login_button_hover = self.login_button_hover.resize(scale_factor)
+            self.hover_dict[self.login_button.hashed] = self.login_button_hover
+            login_button_pos = (
+                self.parchment_image.rect.w // 2 - self.login_button.rect.w // 2 + self.parchment_image.rect.x,
+                self.parchment_image.rect.h // 1.70 + self.parchment_image.rect.y)
+            self.login_button.set_position(login_button_pos)
+            self.login_button_hover.set_position(login_button_pos)
+            self.buttons.append(self.login_button)
+            self.blit(self.login_button, self.login_button.rect.topleft)
+        else:
+            # place register button
+            self.register_button = Button(self, "assets/buttons/register.png", call=lambda: self.login(), convert_alpha=True)
+            self.register_button_hover = Image(self, "assets/buttons/register_hover.png", convert_alpha=True)
+            scale_factor = (self.parchment_image.rect.w // 7.5) / 130
+            self.register_button = self.register_button.resize(scale_factor)
+            self.register_button_hover = self.register_button_hover.resize(scale_factor)
+            self.hover_dict[self.register_button.hashed] = self.register_button_hover
+            register_button_pos = (
+                self.parchment_image.rect.w // 2 - self.register_button.rect.w // 2 + self.parchment_image.rect.x,
+                self.parchment_image.rect.h // 1.70 + self.parchment_image.rect.y)
+            self.register_button.set_position(register_button_pos)
+            self.register_button_hover.set_position(register_button_pos)
+            self.buttons.append(self.register_button)
+            self.blit(self.register_button, self.register_button.rect.topleft)
 
         # initialize boxes
         boxes_w, boxes_h = self.parchment_image.rect.w // 1.75, 50
@@ -260,6 +279,11 @@ class LoginMenu(MenuBackground):
     def login(self):
         username = self.input_box_username.text
         password = self.input_box_password.text
+
+        if self.db.sign_in(username, password):
+            print("logged in")
+        else:
+            print("wrong username or password")
 
     def event_handler(self, event):
         self.button_event_handler(event)
