@@ -72,7 +72,8 @@ class MenuBackground(pygame.Surface):
             self.backward_button = self.backward_button.resize(scale_factor)
             self.backward_button_hover = self.backward_button_hover.resize(scale_factor)
             self.backward_button.set_position((self.backward_button.rect.w // 2, self.backward_button.rect.h // 2))
-            self.backward_button_hover.set_position((self.backward_button.rect.w // 2, self.backward_button.rect.h // 2))
+            self.backward_button_hover.set_position((self.backward_button.rect.w // 2,
+                                                     self.backward_button.rect.h // 2))
 
             self.buttons.append(self.backward_button)
             self.hover_dict[self.backward_button.hashed] = self.backward_button_hover
@@ -307,11 +308,15 @@ class LoginMenu(MenuBackground):
         else:
             print("wrong username or password")
 
+        pygame.event.post(pygame.event.Event(CHANGE_TO_GAMEMODE))
+
     def register(self):
         username = self.input_box_username.text
         password = self.input_box_password.text
 
         self.db.sign_up(username, password)
+
+        pygame.event.post(pygame.event.Event(CHANGE_TO_GAMEMODE))
 
     def event_handler(self, event):
         self.button_event_handler(event)
@@ -334,3 +339,71 @@ class LoginMenu(MenuBackground):
                 self.blit(self.register_button_hover, self.register_button.rect.topleft)
             else:
                 self.blit(self.register_button, self.register_button.rect.topleft)
+
+
+class GameModeMenu(MenuBackground):
+    def __init__(self, size: tuple[float, float]):
+        super().__init__(size, pre_menu_event=CHANGE_TO_HOME)
+
+        # load images for buttons (gamemode, stats, quit)
+        self.single_player_button = Button(self, "assets/buttons/single_player.png",
+                                           call=lambda: print("single_player"), convert_alpha=True)
+        self.multiplayer_button = Button(self, "assets/buttons/multiplayer.png",
+                                         call=lambda: print("multiplayer"), convert_alpha=True)
+        self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"),
+                                   convert_alpha=True)
+
+        # load images for the hover effect
+        self.single_player_button_hover = Image(self, "assets/buttons/single_player_hover.png", convert_alpha=True)
+        self.multiplayer_button_hover = Image(self, "assets/buttons/multiplayer_hover.png", convert_alpha=True)
+        self.stats_button_hover = Image(self, "assets/buttons/stats_hover.png", convert_alpha=True)
+
+        # resize buttons
+        scale_factor = (self.parchment_image.rect.w // 4.5) / 140
+        self.single_player_button = self.single_player_button.resize(scale_factor)
+        self.multiplayer_button = self.multiplayer_button.resize(scale_factor)
+        self.stats_button = self.stats_button.resize(scale_factor)
+
+        # resize hover effect
+        self.single_player_button_hover = self.single_player_button_hover.resize(scale_factor)
+        self.multiplayer_button_hover = self.multiplayer_button_hover.resize(scale_factor)
+        self.stats_button_hover = self.stats_button_hover.resize(scale_factor)
+
+        # add hover effect to the hover_dict
+        self.hover_dict[self.single_player_button.hashed] = self.single_player_button_hover
+        self.hover_dict[self.multiplayer_button.hashed] = self.multiplayer_button_hover
+        self.hover_dict[self.stats_button.hashed] = self.stats_button_hover
+
+        # set positions of the buttons
+        single_player_button_pos = (
+            self.parchment_image.rect.w // 2 - self.single_player_button.rect.w // 2 + self.parchment_image.rect.x,
+            self.parchment_image.rect.h // 5.5 + self.parchment_image.rect.y)
+        multiplayer_button_pos = (
+            self.parchment_image.rect.w // 2 - self.multiplayer_button.rect.w // 2 + self.parchment_image.rect.x,
+            self.parchment_image.rect.h // 2.35 + self.parchment_image.rect.y)
+        quit_button_pos = (
+            self.parchment_image.rect.w // 2 - self.stats_button.rect.w // 2 + self.parchment_image.rect.x,
+            self.parchment_image.rect.h // 1.5 + self.parchment_image.rect.y)
+
+        self.single_player_button.set_position(single_player_button_pos)
+        self.multiplayer_button.set_position(multiplayer_button_pos)
+        self.stats_button.set_position(quit_button_pos)
+
+        # set positions of the hover effect
+        self.single_player_button_hover.set_position(single_player_button_pos)
+        self.multiplayer_button_hover.set_position(multiplayer_button_pos)
+        self.stats_button_hover.set_position(quit_button_pos)
+
+        # copy the images on the surface
+        self.blit(self.single_player_button, self.single_player_button.rect.topleft)
+        self.blit(self.multiplayer_button, self.multiplayer_button.rect.topleft)
+        self.blit(self.stats_button, self.stats_button.rect.topleft)
+
+        self.buttons.extend([self.single_player_button, self.multiplayer_button, self.stats_button])
+
+    def event_handler(self, event):
+        self.button_event_handler(event)
+
+
+class ChooseBoardMenu(MenuBackground):
+    pass
