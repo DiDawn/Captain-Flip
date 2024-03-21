@@ -55,8 +55,6 @@ class Database:
                 if row[0] == identifier:
                     # Increment the number of victories for the player
                     row[2] = str(int(row[2]) + 1)
-                    # Update the class statistics
-                    self.victories += 1
                     # Move the cursor to the beginning of the file
                     csvfile.seek(0)
                     # Create a CSV writer object
@@ -81,8 +79,6 @@ class Database:
                 if row[0] == identifier:
                     # Increment the number of draws for the player
                     row[3] = str(int(row[3]) + 1)
-                    # Update the class statistics
-                    self.draws += 1
                     # Move the cursor to the beginning of the file
                     csvfile.seek(0)
                     # Create a CSV writer object
@@ -106,8 +102,6 @@ class Database:
                 if row[0] == identifier:
                     # Increment the number of draws for the player
                     row[4] = str(int(row[4]) + 1)
-                    # Update the class statistics
-                    self.draws += 1
                     # Move the cursor to the beginning of the file
                     csvfile.seek(0)
                     # Create a CSV writer object
@@ -117,3 +111,9 @@ class Database:
                     # Truncate the file to the current length
                     csvfile.truncate()
                     return
+
+
+if __name__ == '__main__':
+    db = Database('database.csv')
+    db.add_victory('test')
+    print(db.return_stats())

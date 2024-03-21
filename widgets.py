@@ -65,14 +65,17 @@ class Button(Image):
 
 
 class InputBox:
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x, y, w, h, text='', under_text=''):
         self.rect = pygame.Rect(x, y, w, h)
+        self.under_text_color = pygame.Color((75, 75, 75))
         self.color_inactive = pygame.Color((0, 0, 0))
         self.color_active = pygame.Color((4, 54, 130))
         self.color = self.color_inactive
         self.text = text
         self.font = pygame.font.Font(None, 48)
+        self.under_text_font = pygame.font.Font(None, 48)
         self.txt_surface = self.font.render(text, True, self.color)
+        self.under_text_surface = self.under_text_font.render(under_text, True, self.under_text_color)
         self.active = False
 
     def handle_event(self, event):
@@ -103,6 +106,9 @@ class InputBox:
         self.rect.w = width
 
     def draw(self, screen):
+        # blit the under text
+        if self.text == '' and self.active is False:
+            screen.blit(self.under_text_surface, (self.rect.x + 10, self.rect.y + 10))
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+10, self.rect.y+10))
         # Blit the rect.
