@@ -1,6 +1,5 @@
 from player import Player
 
-
 # creating a new class for the different columns composing the different boards
 class Column:
 

@@ -1,5 +1,6 @@
 from column import Column
 
+# yes
 B1C1 = Column(2, None)
 B1C2 = Column(3, "treasure_map")
 B1C3 = Column(5, "add5gold")
