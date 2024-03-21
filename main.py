@@ -2,6 +2,7 @@ import pygame
 import ctypes
 from menus import LoginMenu, HomeMenu, FirstMenu
 from time import time
+from parameters import *
 
 
 # init pygame module
@@ -11,26 +12,31 @@ pygame.init()
 user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
-background_colour = (0, 0, 0)
-FIRST_MENU = 0
-LOGIN_MENU = 1
-HOME_MENU = 2
-
 # define dimension of pygame screen (width,height)
 screen = pygame.display.set_mode(screensize)
 
 # Set the caption of the screen
 pygame.display.set_caption('Captain FLip')
 
-# Fill the background colour to the screen
-screen.fill(background_colour)
-
 # Update the display using flip
 pygame.display.flip()
 
-# init home_screen
-current_menu = LoginMenu(screensize)
-game_state = LOGIN_MENU
+# init menus
+first_menu = FirstMenu(screensize)
+login_menu = LoginMenu(screensize, "login")
+register_menu = LoginMenu(screensize, "register")
+home_menu = HomeMenu(screensize)
+
+# create dictionary to store menus
+menus = {
+    FIRST_MENU: first_menu,
+    LOGIN_MENU: login_menu,
+    REGISTER_MENU: register_menu,
+    HOME_MENU: home_menu
+}
+
+game_state = FIRST_MENU
+current_menu = FirstMenu(screensize)
 
 # Variable to keep our game loop running
 running = True
@@ -46,9 +52,22 @@ while running:
         # Check for QUIT event
         if event.type == pygame.QUIT:
             running = False
+        # check for custom events
+        elif event.type == CHANGE_TO_FIRST:
+            game_state = FIRST_MENU
+            current_menu = menus[FIRST_MENU]
+        elif event.type == CHANGE_TO_LOGIN:
+            game_state = LOGIN_MENU
+            current_menu = menus[LOGIN_MENU]
+        elif event.type == CHANGE_TO_REGISTER:
+            game_state = REGISTER_MENU
+            current_menu = menus[REGISTER_MENU]
+        elif event.type == CHANGE_TO_HOME:
+            game_state = HOME_MENU
+            current_menu = menus[HOME_MENU]
+
         else:
-            if game_state == LOGIN_MENU:
-                current_menu.event_handler(event)
+            current_menu.event_handler(event)
 
         screen.blit(current_menu, (0, 0))
 
