@@ -1,73 +1,16 @@
 import pygame
-from pygame.locals import *
 import ctypes
-from resizer import resize
+from menus import LoginMenu, HomeMenu, FirstMenu
+from time import time
+from parameters import *
 
 
 # init pygame module
 pygame.init()
 
-
-class HomeMenu(pygame.Surface):
-    def __init__(self, size: tuple[float, float]):
-        super().__init__(size)
-
-        # load images for the background
-        self.sea_image = pygame.image.load("sea.png").convert()
-        self.captain_flip_image = pygame.image.load("captain_flip_logo.png").convert_alpha()
-
-        # resize background image
-        img_width = self.sea_image.get_size()[0]
-        scale_factor = size[0] / img_width
-        self.sea_image = resize(scale_factor, self.sea_image)
-
-        # resize logo
-        img_width = self.captain_flip_image.get_size()[0]
-        scale_factor = (size[0] // 3) / img_width
-        self.captain_flip_image = resize(scale_factor, self.captain_flip_image)
-
-        # copy the images on the surface
-        self.blit(self.sea_image, (0, 0))
-        self.blit(self.captain_flip_image, (size[0]//2 - self.captain_flip_image.get_size()[0]//2, -size[1]//20))
-
-        # load images for buttons
-        self.parchment_image = pygame.image.load("parchment.png").convert_alpha()
-        parchment_w, parchment_h = self.parchment_image.get_size()
-
-        self.login_image = pygame.image.load("login.png").convert_alpha()
-
-        # resize parchment
-        img_width = self.parchment_image.get_size()[0]
-        scale_factor = (size[0] // 3) / img_width
-        self.parchment_image = resize(scale_factor, self.parchment_image)
-
-        # resize login image
-        img_width = self.login_image.get_size()[0]
-        scale_factor = (parchment_w // 3) / img_width
-        self.login_image = resize(scale_factor, self.login_image)
-
-        # copy the images on the surface
-        self.parchment_image.blit(self.login_image, (parchment_w//2 - self.login_image.get_size()[0] // 2,
-                                                     parchment_h//4))
-
-        # the image need to be blit at the end
-        self.blit(self.parchment_image, (size[0] // 2 - self.captain_flip_image.get_size()[0] // 2,
-                                         size[1] // 1.75 - self.captain_flip_image.get_size()[1] // 2))
-
-    def event_handler(self, event):
-        if event.type == MOUSEBUTTONDOWN:
-            mouse_pos = event.pos  # coordinates of click point.
-            print(self.login_image.get_rect())
-            if self.login_image.get_rect().collidepoint(mouse_pos):
-                print('hi')
-
-
 # get screen size
 user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-
-background_colour = (0, 0, 0)
-HOME_MENU = 0
 
 # define dimension of pygame screen (width,height)
 screen = pygame.display.set_mode(screensize)
@@ -75,19 +18,31 @@ screen = pygame.display.set_mode(screensize)
 # Set the caption of the screen
 pygame.display.set_caption('Captain FLip')
 
-# Fill the background colour to the screen
-screen.fill(background_colour)
-
 # Update the display using flip
 pygame.display.flip()
 
-# init home_screen
+# init menus
+first_menu = FirstMenu(screensize)
+login_menu = LoginMenu(screensize, "login")
+register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
-game_state = HOME_MENU
+
+# create dictionary to store menus
+menus = {
+    FIRST_MENU: first_menu,
+    LOGIN_MENU: login_menu,
+    REGISTER_MENU: register_menu,
+    HOME_MENU: home_menu
+}
+
+game_state = FIRST_MENU
+current_menu = FirstMenu(screensize)
 
 # Variable to keep our game loop running
 running = True
-
+screen.blit(current_menu, (0, 0))
+time0 = time()
+fps_a = []
 # game loop
 while running:
 
@@ -97,9 +52,34 @@ while running:
         # Check for QUIT event
         if event.type == pygame.QUIT:
             running = False
-        else:
-            if game_state == HOME_MENU:
-                home_menu.event_handler(event)
+        # check for custom events
+        elif event.type == CHANGE_TO_FIRST:
+            game_state = FIRST_MENU
+            current_menu = menus[FIRST_MENU]
+        elif event.type == CHANGE_TO_LOGIN:
+            game_state = LOGIN_MENU
+            current_menu = menus[LOGIN_MENU]
+        elif event.type == CHANGE_TO_REGISTER:
+            game_state = REGISTER_MENU
+            current_menu = menus[REGISTER_MENU]
+        elif event.type == CHANGE_TO_HOME:
+            game_state = HOME_MENU
+            current_menu = menus[HOME_MENU]
 
-    screen.blit(home_menu, (0, 0))
+        else:
+            current_menu.event_handler(event)
+
+        screen.blit(current_menu, (0, 0))
+
     pygame.display.flip()
+
+    # show fps
+    delta = time() - time0
+    fps = 1/delta if delta != 0 else 1200
+    length = len(fps_a)
+    if length != 1000:
+        fps_a.append(fps)
+    else:
+        print(sum(fps_a)/length)
+        fps_a = []
+    time0 = time()
