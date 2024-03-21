@@ -49,7 +49,7 @@ class Database:
             reader = csv.reader(csvfile)
             rows = list(reader)  # Convert the rows to a list to modify them
 
-            # Iterate through the rows
+            # Iterate through the rowss
             for i, row in enumerate(rows):
                 # Check if the identifier matches
                 if row[0] == identifier:
