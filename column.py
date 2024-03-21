@@ -1,5 +1,6 @@
 from player import Player
 
+
 # creating a new class for the different columns composing the different boards
 class Column:
 
@@ -31,7 +32,7 @@ class Column:
             player.gold += 5
         elif self.bonus == "treasure_map":
             # letting the game know who is the possessor of the map
-            game.treasure_map_possessor = player.id76
+            game.treasure_map_possessor = player.ID
         elif self.bonus == "add1/0gold":
             # the first person to finish that column win 1 gold
             if game.add10_counter == 0:
