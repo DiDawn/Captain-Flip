@@ -49,11 +49,8 @@ while running:
         else:
             if game_state == LOGIN_MENU:
                 current_menu.event_handler(event)
-            if game_state == HOME_MENU or game_state == FIRST_MENU or game_state == LOGIN_MENU:
-                # only update the parchment part since the background is static
-                screen.blit(current_menu, current_menu.parchment_image.rect.topleft, current_menu.parchment_image.rect)
-            else:
-                screen.blit(current_menu, (0, 0))
+
+        screen.blit(current_menu, (0, 0))
 
     pygame.display.flip()
 

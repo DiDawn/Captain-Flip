@@ -43,8 +43,8 @@ class MenuBackground(pygame.Surface):
             self.parchment_image = self.parchment_image.resize(scale_factor)
 
             # set positions of the parchment
-            self.parchment_image.set_position((size[0] // 2 - self.parchment_image.rect.w // 2,
-                                               size[1] // 1.5 - self.parchment_image.rect.h // 2))
+            self.parchment_image.set_position((size[0] // 2 - self.parchment_image.rect.w,
+                                               size[1] // 1.5 - self.parchment_image.rect.h))
 
             # copy the image on the surface
             self.blit(self.parchment_image, self.parchment_image.rect.topleft)
@@ -57,8 +57,8 @@ class MenuBackground(pygame.Surface):
         scale_factor = (size[0] // 20) / self.close_button.rect.w
         self.close_button = self.close_button.resize(scale_factor)
         self.close_button_hover = self.close_button_hover.resize(scale_factor)
-        self.close_button.set_position((size[0] - self.close_button.rect.w // 2, self.close_button.rect.h // 2))
-        self.close_button_hover.set_position((size[0] - self.close_button.rect.w // 2, self.close_button.rect.h // 2))
+        self.close_button.set_position((size[0] - self.close_button.rect.w * 1.5, self.close_button.rect.h // 2))
+        self.close_button_hover.set_position((size[0] - self.close_button.rect.w * 1.5, self.close_button.rect.h // 2))
 
         self.buttons.append(self.close_button)
         self.hover_dict[self.close_button.hashed] = self.close_button_hover
@@ -273,7 +273,7 @@ class LoginMenu(MenuBackground):
         else:
             self.blit(self.login_button, self.login_button.rect.topleft)
         if self.close_button.hover:
-            self.blit(self.close_button_hover, self.login_button.rect.topleft)
+            self.blit(self.close_button_hover, self.close_button.rect.topleft)
         else:
-            self.blit(self.close_button, self.login_button.rect.topleft)
+            self.blit(self.close_button, self.close_button.rect.topleft)
 
