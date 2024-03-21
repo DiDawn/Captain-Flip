@@ -9,14 +9,17 @@ class Column:
     def add_tile(self, tile):
     # Verifying the column's length
         if len(self.column) == self.length:
+            pass
     # adding the tile to the column if the column isn't full
-        else: self.column.append(tile)
+        else:
+            self.column.append(tile)
             if len(self.column) == self.length:
             # applying the column's bonus if the column is full after adding the new tile
-                    apply_bonus(self.bonus)
+                self.apply_bonus(self.bonus)
 
     def apply_bonus(self):
-        if self.bonus=="add3gold"
+        if self.bonus=="add3gold":
+            pass
 
 
 
