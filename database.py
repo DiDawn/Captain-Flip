@@ -117,9 +117,3 @@ class Database:
                     # Truncate the file to the current length
                     csvfile.truncate()
                     return
-
-
-if __name__ == "__main__":
-    db = Database("database.csv")
-    
-    print(db.sign_in("test", "test"))

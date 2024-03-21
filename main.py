@@ -29,7 +29,7 @@ screen.fill(background_colour)
 pygame.display.flip()
 
 # init home_screen
-current_menu = LoginMenu(screensize, "login")
+current_menu = LoginMenu(screensize)
 game_state = LOGIN_MENU
 
 # Variable to keep our game loop running
