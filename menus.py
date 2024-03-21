@@ -233,7 +233,7 @@ class LoginMenu(MenuBackground):
         self.blit(self.parchment_image, self.parchment_image.rect.topleft)
 
         # place login button
-        self.login_button = Button(self, "assets/buttons/login.png", call=lambda: print("login"), convert_alpha=True)
+        self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(), convert_alpha=True)
         self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
         scale_factor = (self.parchment_image.rect.w // 7.5) / 130
         self.login_button = self.login_button.resize(scale_factor)
@@ -256,6 +256,10 @@ class LoginMenu(MenuBackground):
         self.input_box_username = InputBox(box1_pos[0], box1_pos[1], boxes_w, boxes_h)
         self.input_box_password = InputBox(box2_pos[0], box2_pos[1], boxes_w, boxes_h)
         self.input_boxes = [self.input_box_username, self.input_box_password]
+
+    def login(self):
+        username = self.input_box_username.text
+        password = self.input_box_password.text
 
     def event_handler(self, event):
         self.button_event_handler(event)
