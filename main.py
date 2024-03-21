@@ -1,6 +1,7 @@
 import pygame
 import ctypes
 from menus import LoginMenu, HomeMenu
+from time import time
 
 
 # init pygame module
@@ -33,7 +34,7 @@ game_state = LOGIN_MENU
 # Variable to keep our game loop running
 running = True
 screen.blit(login_menu, (0, 0))
-
+time0 = time()
 # game loop
 while running:
 
@@ -50,3 +51,5 @@ while running:
     # only update the parchment part since the background is static
     screen.blit(login_menu, login_menu.parchment_image.rect.topleft, login_menu.parchment_image.rect)
     pygame.display.flip()
+    print(1/(time() - time0))
+    time0 = time()

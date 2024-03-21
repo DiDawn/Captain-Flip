@@ -71,9 +71,9 @@ class LoginMenu(MenuBackground):
         super().__init__(size)
 
         # load images for buttons
-        self.login_button = Button(self, "assets/login.png", call=lambda: print("login"), convert_alpha=True)
-        self.register_button = Button(self, "assets/register.png", call=lambda: print("register"), convert_alpha=True)
-        self.quit_button = Button(self, "assets/quit.png", call=lambda: (pygame.quit(), exit(0)), convert_alpha=True)
+        self.login_button = Button(self, "assets/buttons/login.png", call=lambda: print("login"), convert_alpha=True)
+        self.register_button = Button(self, "assets/buttons/register.png", call=lambda: print("register"), convert_alpha=True)
+        self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)), convert_alpha=True)
 
         # load images for the hover effect
         self.login_button_hover = Image(self, "assets/login_hover.png", convert_alpha=True)
@@ -128,9 +128,9 @@ class HomeMenu(MenuBackground):
         self.hover_dict = {}
 
         # load images for buttons (gamemode, stats, quit)
-        self.gamemode_button = Button(self, "assets/gamemode.png", call=lambda: print("gamemode"), convert_alpha=True)
-        self.stats_button = Button(self, "assets/stats.png", call=lambda: print("stats"), convert_alpha=True)
-        self.quit_button = Button(self, "assets/quit.png", call=lambda: (pygame.quit(), exit(0)), convert_alpha=True)
+        self.gamemode_button = Button(self, "assets/buttons/gamemode.png", call=lambda: print("gamemode"), convert_alpha=True)
+        self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"), convert_alpha=True)
+        self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)), convert_alpha=True)
 
         # load images for the hover effect
         self.gamemode_button_hover = Image(self, "assets/gamemode_hover.png", convert_alpha=True)
