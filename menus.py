@@ -418,11 +418,11 @@ class ChooseBoardMenu(MenuBackground):
             self.board_c_image = self.board_c_image.resize(size[0]//5 / self.board_c_image.rect.w)
 
             # initialize boards images as buttons
-            self.board_a_button =  Button(self, "assets/buttons/board_a.png",
+            self.board_a_button =  Button(self, "assets/boards/board_a.png",
                                                call=lambda: print("board_a"), convert_alpha=True)
-            self.board_b_button =  Button(self, "assets/buttons/board_b.png",
+            self.board_b_button =  Button(self, "assets/boards/board_b.png",
                                                call=lambda: print("board_b"), convert_alpha=True)
-            self.board_c_button =  Button(self, "assets/buttons/board_c.png",
+            self.board_c_button =  Button(self, "assets/boards/board_c.png",
                                                call=lambda: print("board_c"), convert_alpha=True)
 
             self.blit(self.board_a_button, (size[0] // 2 - self.board_a_button.rect.w // 2,
