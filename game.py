@@ -16,12 +16,7 @@ class Game:
 
     # function that check who is the treasure's map possessor
     def map_possessor(self):
-        # browse the list of players
-        for player in self.players_list:
-            # if it's identical, then the associated player possess the map for the turn
-            if self.treasure_map_possessor == player.ID:
-                # it adds a gold to the possessor
-                player.gold += 1
+        self.treasure_map_possessor.gold +=1
 
     # function that examines if a player have his board full
     def end_of_the_game(self):
