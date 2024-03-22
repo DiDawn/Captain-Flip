@@ -27,7 +27,7 @@ login_menu = LoginMenu(screensize, "login")
 register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
-chooser_board_menu = ChooseBoardMenu(screensize)
+choose_board_menu = ChooseBoardMenu(screensize)
 
 # create dictionary to store menus
 menus = {
