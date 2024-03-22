@@ -306,7 +306,7 @@ class LoginMenu(MenuBackground):
         else:
             print("wrong username or password")
 
-        pygame.event.post(pygame.event.Event(CHANGE_TO_HOME_MENU))
+        pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
 
     def register(self):
         username = self.input_box_username.text
@@ -347,7 +347,7 @@ class GameModeMenu(MenuBackground):
         self.single_player_button = Button(self, "assets/buttons/single_player.png",
                                            call=lambda: print("single_player"), convert_alpha=True)
         self.multiplayer_button = Button(self, "assets/buttons/multiplayer.png",
-                                         call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD_MENU)), convert_alpha=True)
+                                         call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)), convert_alpha=True)
         self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"),
                                    convert_alpha=True)
 
