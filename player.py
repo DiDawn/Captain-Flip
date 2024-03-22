@@ -6,4 +6,3 @@ class Player:
         self.gold = 0
         self.boat_destroyed = False
         self.board = board
-        self.ID = ID
