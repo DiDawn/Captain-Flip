@@ -17,6 +17,7 @@ class Board:
     def __init__(self, column1, column2, column3, column4, column5):
         self.column_list = [column1, column2, column3, column4, column5]
         self.full_column_counter = 0
+        self.gunboat_counter = 0
 
     # function to verify if the board is full
     def verifying_full(self):
