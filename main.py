@@ -1,6 +1,6 @@
 import pygame
 import ctypes
-from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu
+from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu
 from time import time
 from parameters import *
 
@@ -27,6 +27,7 @@ login_menu = LoginMenu(screensize, "login")
 register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
+chooser_board_menu = ChooseBoardMenu(screensize)
 
 # create dictionary to store menus
 menus = {
@@ -34,7 +35,8 @@ menus = {
     LOGIN_MENU: login_menu,
     REGISTER_MENU: register_menu,
     HOME_MENU: home_menu,
-    GAME_MODE_MENU: game_mode_menu
+    GAME_MODE_MENU: game_mode_menu,
+    CHOOSE_BOARD_MENU: choose_board_menu
 }
 
 game_state = FIRST_MENU
