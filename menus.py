@@ -405,25 +405,25 @@ class GameModeMenu(MenuBackground):
 
 class ChooseBoardMenu(MenuBackground):
         def __init__(self, size):
-        super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE)
+            super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE)
         
-        # initialize boards images
-        self.board_a_image = Image(self, "assets/boards/board_a.png")
-        self.board_b_image = Image(self, "assets/boards/board_b.png")
-        self.board_c_image = Image(self, "assets/boards/board_c.png")
+            # initialize boards images
+            self.board_a_image = Image(self, "assets/boards/board_a.png")
+            self.board_b_image = Image(self, "assets/boards/board_b.png")
+            self.board_c_image = Image(self, "assets/boards/board_c.png")
 
-        # resize boards to smaller ones
-        self.board_a_image = self.board_a_image.resize(size[0]//5 / self.board_a_image.rect.w)
-        self.board_b_image = self.board_b_image.resize(size[0]//5 / self.board_b_image.rect.w)
-        self.board_c_image = self.board_c_image.resize(size[0]//5 / self.board_c_image.rect.w)
+            # resize boards to smaller ones
+            self.board_a_image = self.board_a_image.resize(size[0]//5 / self.board_a_image.rect.w)
+            self.board_b_image = self.board_b_image.resize(size[0]//5 / self.board_b_image.rect.w)
+            self.board_c_image = self.board_c_image.resize(size[0]//5 / self.board_c_image.rect.w)
 
-        # initialize boards images as buttons
-        self.board_a_button =  Button(self, "assets/buttons/board_a.png",
-                                           call=lambda: print("board_a"), convert_alpha=True)
-        self.board_b_button =  Button(self, "assets/buttons/board_b.png",
-                                           call=lambda: print("board_b"), convert_alpha=True)
-        self.board_c_button =  Button(self, "assets/buttons/board_c.png",
-                                           call=lambda: print("board_c"), convert_alpha=True)
+            # initialize boards images as buttons
+            self.board_a_button =  Button(self, "assets/buttons/board_a.png",
+                                               call=lambda: print("board_a"), convert_alpha=True)
+            self.board_b_button =  Button(self, "assets/buttons/board_b.png",
+                                               call=lambda: print("board_b"), convert_alpha=True)
+            self.board_c_button =  Button(self, "assets/buttons/board_c.png",
+                                               call=lambda: print("board_c"), convert_alpha=True)
 
-        self.blit(self.board_a_button, (size[0] // 2 - self.board_a_button.rect.w // 2,
-                                        size[1] // 2 - self.board_a_button.rect.h // 2))
+            self.blit(self.board_a_button, (size[0] // 2 - self.board_a_button.rect.w // 2,
+                                            size[1] // 2 - self.board_a_button.rect.h // 2))
