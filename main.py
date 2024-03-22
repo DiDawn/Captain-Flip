@@ -79,7 +79,7 @@ while running:
         else:
             current_menu.event_handler(event)
 
-        screen.blit(current_menu, (0, 0))
+    screen.blit(current_menu, (0, 0))
 
     pygame.display.flip()
 
