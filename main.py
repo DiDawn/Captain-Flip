@@ -72,7 +72,7 @@ while running:
         elif event.type == CHANGE_TO_GAMEMODE:
             game_state = GAME_MODE_MENU
             current_menu = menus[GAME_MODE_MENU]
-        elif event.type == CHANGE_TO_CHOOSE_BOARD_MENU:
+        elif event.type == CHANGE_TO_CHOOSE_BOARD:
             game_state = CHOOSE_BOARD_MENU
             current_menu = menus[CHOOSE_BOARD_MENU]
 
