@@ -32,7 +32,7 @@ class Column:
             player.gold += 5
         elif self.bonus == "treasure_map":
             # letting the game know who is the possessor of the map
-            game.treasure_map_possessor = player.ID
+            game.treasure_map_possessor = player
         elif self.bonus == "add1/0gold":
             # the first person to finish that column win 1 gold
             if game.add10_counter == 0:
