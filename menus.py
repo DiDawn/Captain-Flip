@@ -168,8 +168,6 @@ class HomeMenu(MenuBackground):
     def __init__(self, size: tuple[float, float]):
         super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
-        self.hover_dict = {}
-
         # load images for buttons (gamemode, stats, quit)
         self.gamemode_button = Button(self, "assets/buttons/gamemode.png", call=lambda: print("gamemode"),
                                       convert_alpha=True)
