@@ -5,6 +5,7 @@ LOGIN_MENU = 1
 REGISTER_MENU = 2
 HOME_MENU = 3
 GAME_MODE_MENU = 4
+CHOOSE_BOARD_MENU = 5
 
 # customs events for changing menus
 CHANGE_TO_FIRST = pygame.USEREVENT + 1
