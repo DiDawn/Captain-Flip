@@ -113,3 +113,22 @@ class InputBox:
         screen.blit(self.txt_surface, (self.rect.x+10, self.rect.y+10))
         # Blit the rect.
         pygame.draw.rect(screen, self.color, self.rect, 5, border_radius=15)
+
+
+class Carousel(pygame.Surface):
+    def __init__(self, size, image_list: list[Image]):
+        super().__init__(size)
+        self.rect = self.get_rect()
+
+        # convert
+
+        self.carousel = {}
+        length = len(image_list)
+        for i, image in enumerate(image_list):
+            i = i if i + 1 < length else -1
+            self.carousel[image] = image_list[i+1]
+
+
+
+    def set_position(self, pos):
+        self.rect.topleft = pos

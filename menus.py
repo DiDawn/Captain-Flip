@@ -169,7 +169,8 @@ class HomeMenu(MenuBackground):
         super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
         # load images for buttons (gamemode, stats, quit)
-        self.gamemode_button = Button(self, "assets/buttons/gamemode.png", call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_GAMEMODE)),
+        self.gamemode_button = Button(self, "assets/buttons/gamemode.png",
+                                      call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_GAMEMODE)),
                                       convert_alpha=True)
         self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"), convert_alpha=True)
         self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
@@ -347,7 +348,8 @@ class GameModeMenu(MenuBackground):
         self.single_player_button = Button(self, "assets/buttons/single_player.png",
                                            call=lambda: print("single_player"), convert_alpha=True)
         self.multiplayer_button = Button(self, "assets/buttons/multiplayer.png",
-                                         call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)), convert_alpha=True)
+                                         call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
+                                         convert_alpha=True)
         self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"),
                                    convert_alpha=True)
 
@@ -404,26 +406,37 @@ class GameModeMenu(MenuBackground):
 
 
 class ChooseBoardMenu(MenuBackground):
-        def __init__(self, size):
-            super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE)
-        
-            # initialize boards images
-            self.board_a_image = Image(self, "assets/boards/board_a.png")
-            self.board_b_image = Image(self, "assets/boards/board_b.png")
-            self.board_c_image = Image(self, "assets/boards/board_c.png")
+    def __init__(self, size):
+        super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE, with_parchment=False)
 
-            # resize boards to smaller ones
-            self.board_a_image = self.board_a_image.resize(size[0]//5 / self.board_a_image.rect.w)
-            self.board_b_image = self.board_b_image.resize(size[0]//5 / self.board_b_image.rect.w)
-            self.board_c_image = self.board_c_image.resize(size[0]//5 / self.board_c_image.rect.w)
+        self.board_images = {}
+        self.board_buttons = {}
+        self.carrousel = {}
 
-            # initialize boards images as buttons
-            self.board_a_button =  Button(self, "assets/boards/board_a.png",
-                                               call=lambda: print("board_a"), convert_alpha=True)
-            self.board_b_button =  Button(self, "assets/boards/board_b.png",
-                                               call=lambda: print("board_b"), convert_alpha=True)
-            self.board_c_button =  Button(self, "assets/boards/board_c.png",
-                                               call=lambda: print("board_c"), convert_alpha=True)
+        # initialize boards images
+        self.board_a_image = Image(self, "assets/boards/board_a.png", convert_alpha=True)
+        self.board_b_image = Image(self, "assets/boards/board_b.png", convert_alpha=True)
+        self.board_c_image = Image(self, "assets/boards/board_c.png", convert_alpha=True)
 
-            self.blit(self.board_a_button, (size[0] // 2 - self.board_a_button.rect.w // 2,
-                                            size[1] // 2 - self.board_a_button.rect.h // 2))
+        # resize boards to smaller ones
+        self.board_a_image = self.board_a_image.resize((size[0] // 5) / self.board_a_image.rect.w)
+        self.board_b_image = self.board_b_image.resize((size[0] // 5) / self.board_b_image.rect.w)
+        self.board_c_image = self.board_c_image.resize((size[0] // 5) / self.board_c_image.rect.w)
+
+        # rotate the images
+        self.board_a_image = self.board_a_image.rotate(270)
+        self.board_b_image = self.board_a_image.rotate(270)
+        self.board_c_image = self.board_a_image.rotate(270)
+
+        # initialize boards images as buttons
+        self.board_a_button = Button(self, "assets/boards/board_a.png",
+                                     call=lambda: print("board_a"), convert_alpha=True)
+        self.board_b_button = Button(self, "assets/boards/board_b.png",
+                                     call=lambda: print("board_b"), convert_alpha=True)
+        self.board_c_button = Button(self, "assets/boards/board_c.png",
+                                     call=lambda: print("board_c"), convert_alpha=True)
+
+        self.blit(self.board_a_image, (0, 0))
+
+    def event_handler(self, event):
+        self.button_event_handler(event)

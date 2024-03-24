@@ -39,8 +39,8 @@ menus = {
     CHOOSE_BOARD_MENU: choose_board_menu
 }
 
-game_state = FIRST_MENU
-current_menu = FirstMenu(screensize)
+game_state = CHOOSE_BOARD_MENU
+current_menu = ChooseBoardMenu(screensize)
 
 # Variable to keep our game loop running
 running = True
