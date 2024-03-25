@@ -1,5 +1,5 @@
 import ctypes
-from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu, RulesMenu
+from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu, RulesMenu, StatsMenu
 from time import time
 from parameters import *
 
@@ -29,6 +29,7 @@ home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
 choose_board_menu = ChooseBoardMenu(screensize)
 rules_menu = RulesMenu(screensize)
+stats_menu = StatsMenu(screensize)
 
 # load and start music
 pygame.mixer.music.load('assets/music/sot_bo.ogg')
@@ -43,12 +44,14 @@ menus = {
     HOME_MENU: home_menu,
     GAME_MODE_MENU: game_mode_menu,
     CHOOSE_BOARD_MENU: choose_board_menu,
-    RULES_MENU: rules_menu
+    RULES_MENU: rules_menu,
+    STATS_MENU: stats_menu
 }
 
 game_state = LOGIN_MENU
 current_menu = FirstMenu(screensize)
-
+# initialize pygame clock
+clock = pygame.time.Clock()
 # Variable to keep our game loop running
 running = True
 screen.blit(current_menu, (0, 0))
@@ -56,7 +59,8 @@ time0 = time()
 fps_a = []
 # game loop
 while running:
-
+    # tick the clock
+    clock.tick(60)
     # for loop through the event queue
     for event in pygame.event.get():
 
@@ -85,6 +89,9 @@ while running:
         elif event.type == CHANGE_TO_RULES:
             game_state = RULES_MENU
             current_menu = menus[RULES_MENU]
+        elif event.type == CHANGE_TO_STATS:
+            game_state = STATS_MENU
+            current_menu = menus[STATS_MENU]
 
         else:
             current_menu.event_handler(event)
