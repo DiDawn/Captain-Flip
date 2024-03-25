@@ -1,13 +1,15 @@
 from player import Player
 
-
 # creating a new class for the different columns composing the different boards
 class Column:
 
-    def __init__(self, length, bonus):
+    def __init__(self, length, place_in_the_board, gap_from_the_bottom, bonus):
         self.column = []
         self.length = length
+        self.place_in_the_board = place_in_the_board
+        self.gap_from_the_bottom = gap_from_the_bottom
         self.bonus = bonus
+        self.cabin_boy_presence = 0
 
     # Creating a function to add a new tile to the column
     def add_tile(self, tile, player, game):
@@ -80,3 +82,11 @@ class Column:
             game.add42_counter += 1
         else:
             pass
+
+# verifying if there is a cabin boy in the column
+    def cabin_boy_counter(self):
+        for tile in self.column:
+            if tile.character.character_id == 7:
+                # we just need to know if there is at least a cabin boy
+                if self.cabin_boy_presence < 1:
+                    self.cabin_boy_presence += 1
