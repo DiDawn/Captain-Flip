@@ -1,4 +1,6 @@
-from widgets import Image, Button, InputBox, Carousel
+import pygame.event
+
+from widgets import Image, Button, InputBox, Carousel, Number
 from pygame.locals import *
 from database import Database
 from parameters import *
@@ -18,8 +20,8 @@ class MenuBackground(pygame.Surface):
         self.hover_dict = {}
 
         # load images for the background
-        self.sea_image = Image(self, "assets/sea.png")
-        self.captain_flip_image = Image(self, "assets/captain_flip_logo.png", convert_alpha=True)
+        self.sea_image = Image("assets/sea.png")
+        self.captain_flip_image = Image("assets/captain_flip_logo.png", convert_alpha=True)
 
         # resize background image
         scale_factor = size[0] / self.sea_image.rect.w
@@ -40,7 +42,7 @@ class MenuBackground(pygame.Surface):
 
         if with_parchment:
             # load parchment image
-            self.parchment_image = Image(self, "assets/parchment.png", convert_alpha=True)
+            self.parchment_image = Image("assets/parchment.png", convert_alpha=True)
 
             # resize parchment
             scale_factor = (size[0] // 3) / self.parchment_image.rect.w
@@ -54,9 +56,9 @@ class MenuBackground(pygame.Surface):
             self.blit(self.parchment_image, self.parchment_image.rect.topleft)
 
         # add close button
-        self.close_button = Button(self, "assets/buttons/x.png", call=lambda: (pygame.quit(), exit(0)),
+        self.close_button = Button("assets/buttons/x.png", call=lambda: (pygame.quit(), exit(0)),
                                    convert_alpha=True)
-        self.close_button_hover = Image(self, "assets/buttons/x_hover.png", convert_alpha=True)
+        self.close_button_hover = Image("assets/buttons/x_hover.png", convert_alpha=True)
         scale_factor = (size[0] // 20) / self.close_button.rect.w
         self.close_button = self.close_button.resize(scale_factor)
         self.close_button_hover = self.close_button_hover.resize(scale_factor)
@@ -68,9 +70,9 @@ class MenuBackground(pygame.Surface):
         self.blit(self.close_button, self.close_button.rect.topleft)
 
         if pre_menu_event is not None:
-            self.backward_button = Button(self, "assets/buttons/left_arrow.png", call=lambda: pygame.event.post(
+            self.backward_button = Button("assets/buttons/left_arrow.png", call=lambda: pygame.event.post(
                 pygame.event.Event(pre_menu_event)), convert_alpha=True)
-            self.backward_button_hover = Image(self, "assets/buttons/left_arrow_hover.png", convert_alpha=True)
+            self.backward_button_hover = Image("assets/buttons/left_arrow_hover.png", convert_alpha=True)
             scale_factor = (size[0] // 10) / self.backward_button.rect.w
             self.backward_button = self.backward_button.resize(scale_factor)
             self.backward_button_hover = self.backward_button_hover.resize(scale_factor)
@@ -115,19 +117,19 @@ class FirstMenu(MenuBackground):
         super().__init__(size)
 
         # load images for buttons
-        self.login_button = Button(self, "assets/buttons/login.png",
+        self.login_button = Button("assets/buttons/login.png",
                                    call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_LOGIN)),
                                    convert_alpha=True)
-        self.register_button = Button(self, "assets/buttons/register.png",
+        self.register_button = Button("assets/buttons/register.png",
                                       call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_REGISTER)),
                                       convert_alpha=True)
-        self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
+        self.quit_button = Button("assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
                                   convert_alpha=True)
 
         # load images for the hover effect
-        self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
-        self.register_button_hover = Image(self, "assets/buttons/register_hover.png", convert_alpha=True)
-        self.quit_button_hover = Image(self, "assets/buttons/quit_hover.png", convert_alpha=True)
+        self.login_button_hover = Image("assets/buttons/login_hover.png", convert_alpha=True)
+        self.register_button_hover = Image("assets/buttons/register_hover.png", convert_alpha=True)
+        self.quit_button_hover = Image("assets/buttons/quit_hover.png", convert_alpha=True)
 
         # resize buttons
         scale_factor = (self.parchment_image.rect.w // 4.5) / 130
@@ -181,17 +183,19 @@ class HomeMenu(MenuBackground):
         super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
         # load images for buttons (gamemode, stats, quit)
-        self.gamemode_button = Button(self, "assets/buttons/gamemode.png",
+        self.gamemode_button = Button("assets/buttons/gamemode.png",
                                       call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_GAMEMODE)),
                                       convert_alpha=True)
-        self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"), convert_alpha=True)
-        self.quit_button = Button(self, "assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
+        self.stats_button = Button("assets/buttons/stats.png",
+                                   call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_STATS)),
+                                   convert_alpha=True)
+        self.quit_button = Button("assets/buttons/quit.png", call=lambda: (pygame.quit(), exit(0)),
                                   convert_alpha=True)
 
         # load images for the hover effect
-        self.gamemode_button_hover = Image(self, "assets/buttons/gamemode_hover.png", convert_alpha=True)
-        self.stats_button_hover = Image(self, "assets/buttons/stats_hover.png", convert_alpha=True)
-        self.quit_button_hover = Image(self, "assets/buttons/quit_hover.png", convert_alpha=True)
+        self.gamemode_button_hover = Image("assets/buttons/gamemode_hover.png", convert_alpha=True)
+        self.stats_button_hover = Image("assets/buttons/stats_hover.png", convert_alpha=True)
+        self.quit_button_hover = Image("assets/buttons/quit_hover.png", convert_alpha=True)
 
         # resize buttons
         scale_factor = (self.parchment_image.rect.w // 4.5) / 130
@@ -260,17 +264,13 @@ class LoginMenu(MenuBackground):
         self.parchment_image.set_position(parchment_pos)
 
         # refresh background to cover old parchment and blit it above
-        self.blit(self.sea_image, self.sea_image.rect.topleft)
-        self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
-        self.blit(self.parchment_image, self.parchment_image.rect.topleft)
-        self.blit(self.close_button, self.close_button.rect.topleft)
-        self.blit(self.backward_button, self.backward_button.rect.topleft)
+        self.blit_background()
 
         if mode == "login":
             # place login button
-            self.login_button = Button(self, "assets/buttons/login.png", call=lambda: self.login(),
+            self.login_button = Button("assets/buttons/login.png", call=lambda: self.login(),
                                        convert_alpha=True)
-            self.login_button_hover = Image(self, "assets/buttons/login_hover.png", convert_alpha=True)
+            self.login_button_hover = Image("assets/buttons/login_hover.png", convert_alpha=True)
             scale_factor = (self.parchment_image.rect.w // 7.5) / 130
             self.login_button = self.login_button.resize(scale_factor)
             self.login_button_hover = self.login_button_hover.resize(scale_factor)
@@ -284,9 +284,9 @@ class LoginMenu(MenuBackground):
             self.blit(self.login_button, self.login_button.rect.topleft)
         else:
             # place register button
-            self.register_button = Button(self, "assets/buttons/register.png", call=lambda: self.register(),
+            self.register_button = Button("assets/buttons/register.png", call=lambda: self.register(),
                                           convert_alpha=True)
-            self.register_button_hover = Image(self, "assets/buttons/register_hover.png", convert_alpha=True)
+            self.register_button_hover = Image("assets/buttons/register_hover.png", convert_alpha=True)
             scale_factor = (self.parchment_image.rect.w // 7.5) / 130
             self.register_button = self.register_button.resize(scale_factor)
             self.register_button_hover = self.register_button_hover.resize(scale_factor)
@@ -357,20 +357,20 @@ class GameModeMenu(MenuBackground):
         super().__init__(size, pre_menu_event=CHANGE_TO_HOME)
 
         # load images for buttons (gamemode, stats, quit)
-        self.single_player_button = Button(self, "assets/buttons/single_player.png",
+        self.single_player_button = Button("assets/buttons/single_player.png",
                                            call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
                                            convert_alpha=True)
-        self.multiplayer_button = Button(self, "assets/buttons/multiplayer.png",
+        self.multiplayer_button = Button("assets/buttons/multiplayer.png",
                                          call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
                                          convert_alpha=True)
-        self.rules_button = Button(self, "assets/buttons/rules.png",
+        self.rules_button = Button("assets/buttons/rules.png",
                                    call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_RULES)),
                                    convert_alpha=True)
 
         # load images for the hover effect
-        self.single_player_button_hover = Image(self, "assets/buttons/single_player_hover.png", convert_alpha=True)
-        self.multiplayer_button_hover = Image(self, "assets/buttons/multiplayer_hover.png", convert_alpha=True)
-        self.rules_button_hover = Image(self, "assets/buttons/rules_hover.png", convert_alpha=True)
+        self.single_player_button_hover = Image("assets/buttons/single_player_hover.png", convert_alpha=True)
+        self.multiplayer_button_hover = Image("assets/buttons/multiplayer_hover.png", convert_alpha=True)
+        self.rules_button_hover = Image("assets/buttons/rules_hover.png", convert_alpha=True)
 
         # resize buttons
         scale_factor = (self.parchment_image.rect.w // 4.5) / 140
@@ -449,9 +449,9 @@ class RulesMenu(MenuBackground):
         self.images = []
 
         # load rules image
-        self.rules_image1 = Image(self, "assets/rules/rules_1.png")
-        self.rules_image2 = Image(self, "assets/rules/rules_2.png")
-        self.rules_image3 = Image(self, "assets/rules/rules_3.png")
+        self.rules_image1 = Image("assets/rules/rules_1.png")
+        self.rules_image2 = Image("assets/rules/rules_2.png")
+        self.rules_image3 = Image("assets/rules/rules_3.png")
 
         # resize rules image
         scale_factor = (size[0] // 2.25) / self.rules_image1.rect.w
@@ -469,14 +469,14 @@ class RulesMenu(MenuBackground):
         self.images.extend([self.rules_image1, self.rules_image2, self.rules_image3])
 
         # load right and left buttons
-        self.left_button = Button(self, "assets/buttons/left.png", call=lambda: self.previous(),
+        self.left_button = Button("assets/buttons/left.png", call=lambda: self.previous(),
                                   convert_alpha=True)
-        self.right_button = Button(self, "assets/buttons/right.png", call=lambda: self.next(),
+        self.right_button = Button("assets/buttons/right.png", call=lambda: self.next(),
                                    convert_alpha=True)
 
         # load hover images
-        self.left_button_hover = Image(self, "assets/buttons/left_hover.png", convert_alpha=True)
-        self.right_button_hover = Image(self, "assets/buttons/right_hover.png", convert_alpha=True)
+        self.left_button_hover = Image("assets/buttons/left_hover.png", convert_alpha=True)
+        self.right_button_hover = Image("assets/buttons/right_hover.png", convert_alpha=True)
 
         # resize buttons and hover images
         scale_factor = (size[0] // 10) / 100
@@ -497,9 +497,9 @@ class RulesMenu(MenuBackground):
         self.right_button_hover.set_position(right_button_pos)
 
         # load rules position image
-        self.rules_1_3 = Image(self, "assets/rules/1_3.png", convert_alpha=True)
-        self.rules_2_3 = Image(self, "assets/rules/2_3.png", convert_alpha=True)
-        self.rules_3_3 = Image(self, "assets/rules/3_3.png", convert_alpha=True)
+        self.rules_1_3 = Image("assets/rules/1_3.png", convert_alpha=True)
+        self.rules_2_3 = Image("assets/rules/2_3.png", convert_alpha=True)
+        self.rules_3_3 = Image("assets/rules/3_3.png", convert_alpha=True)
 
         # resize rules position image
         scale_factor = (size[0] // 20) / self.rules_1_3.rect.w
@@ -564,4 +564,88 @@ class RulesMenu(MenuBackground):
                     self.right_button.hover = False
                     self.blit(self.right_button, self.right_button.rect.topleft)
 
+        self.button_event_handler(event)
+
+
+class StatsMenu(MenuBackground):
+    def __init__(self, size):
+        super().__init__(size, pre_menu_event=CHANGE_TO_HOME)
+
+        # rotate parchment
+        self.parchment_image = self.parchment_image.rotate(90)
+
+        # resize parchment
+        scale_factor = size[0] // 2.5 / self.parchment_image.rect.w
+        self.parchment_image = self.parchment_image.resize(scale_factor)
+
+        # change parchment position
+        parchment_pos = (
+            size[0] // 2 - self.parchment_image.rect.w // 2, size[1] // 2 - self.parchment_image.rect.h // 3)
+        self.parchment_image.set_position(parchment_pos)
+
+        # refresh background to cover old parchment and blit it above
+        self.blit_background()
+
+        # load stats image
+        self.wins_image = Image("assets/stats/wins.png")
+        self.losses_image = Image("assets/stats/losses.png")
+        self.draws_image = Image("assets/stats/draws.png")
+
+        # resize stats image
+        scale_factor = (size[0] // 2.25) / self.wins_image.rect.w
+        self.wins_image = self.wins_image.resize(scale_factor)
+        self.losses_image = self.losses_image.resize(scale_factor)
+        self.draws_image = self.draws_image.resize(scale_factor)
+
+        # set positions of the stats image
+        stats_pos = (size[0] // 2 - self.wins_image.rect.w // 2, size[1] // 2 - self.wins_image.rect.h // 2)
+        self.wins_image.set_position(stats_pos)
+        self.losses_image.set_position(stats_pos)
+        self.draws_image.set_position(stats_pos)
+
+        # blit stats image
+        self.blit(self.wins_image, self.wins_image.rect.topleft)
+        self.blit(self.losses_image, self.losses_image.rect.topleft)
+        self.blit(self.draws_image, self.draws_image.rect.topleft)
+
+        # load number images
+        self.wins_number = Number(0)
+        self.losses_number = Number(0)
+        self.draws_number = Number(0)
+
+        # resize number images
+        self.number_scale_factor = (size[0] // 2.25) / self.wins_number.rect.w
+        self.wins_number = self.wins_number.resize(self.number_scale_factor)
+        self.losses_number = self.losses_number.resize(self.number_scale_factor)
+        self.draws_number = self.draws_number.resize(self.number_scale_factor)
+
+        # set positions of the number images
+        number_pos = (size[0] // 2 - self.wins_number.rect.w // 2, size[1] // 2 + self.wins_number.rect.h)
+        self.wins_number.set_position(number_pos)
+        self.losses_number.set_position(number_pos)
+        self.draws_number.set_position(number_pos)
+
+        # blit number images
+        self.blit(self.wins_number, self.wins_number.rect.topleft)
+        self.blit(self.losses_number, self.losses_number.rect.topleft)
+        self.blit(self.draws_number, self.draws_number.rect.topleft)
+
+    def update_stats(self, new_stats: tuple[int, int, int]):
+        self.wins_number = Number(new_stats[0])
+        self.losses_number = Number(new_stats[1])
+        self.draws_number = Number(new_stats[2])
+
+        # resize number images
+        self.wins_number = self.wins_number.resize(self.number_scale_factor)
+        self.losses_number = self.losses_number.resize(self.number_scale_factor)
+        self.draws_number = self.draws_number.resize(self.number_scale_factor)
+
+        # set positions of the number images
+        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 2 - self.wins_number.rect.w // 2,
+                      self.parchment_image.rect.y + self.parchment_image.rect.h // 2 + self.wins_number.rect.h)
+        self.wins_number.set_position(number_pos)
+        self.losses_number.set_position(number_pos)
+        self.draws_number.set_position(number_pos)
+
+    def event_handler(self, event):
         self.button_event_handler(event)

@@ -2,9 +2,8 @@ import pygame
 
 
 class Image(pygame.Surface):
-    def __init__(self, master: pygame.Surface, img: str | pygame.Surface, convert_alpha: bool = False,
+    def __init__(self, img: str | pygame.Surface, convert_alpha: bool = False,
                  hashed: int = None):
-        self.master = master
         self.convert2alpha = convert_alpha
         self.hashed = hash(self) if hashed is None else hashed
 
@@ -36,20 +35,20 @@ class Image(pygame.Surface):
         w, h = self.get_size()
         new_w, new_h = w * scale_factor, h * scale_factor
         img = pygame.transform.scale(self, [new_w, new_h])
-        return Image(self.master, img, convert_alpha=self.convert2alpha)
+        return Image(img, convert_alpha=self.convert2alpha)
 
     def set_position(self, position: tuple[float, float]):
         self.rect.topleft = position
 
     def rotate(self, a: float):
         img = pygame.transform.rotate(self, a)
-        return Image(self.master, img, convert_alpha=self.convert2alpha)
+        return Image(img, convert_alpha=self.convert2alpha)
 
 
 class Button(Image):
-    def __init__(self, master: pygame.Surface, img_path: str | pygame.Surface, call=None, convert_alpha: bool = False,
+    def __init__(self, img_path: str | pygame.Surface, call=None, convert_alpha: bool = False,
                  hashed: int = None):
-        super().__init__(master, img_path, convert_alpha, hashed=hashed)
+        super().__init__(img_path, convert_alpha, hashed=hashed)
 
         self.call = call
         self.hover = False
@@ -58,11 +57,11 @@ class Button(Image):
         w, h = self.get_size()
         new_w, new_h = w * scale_factor, h * scale_factor
         img = pygame.transform.scale(self, [new_w, new_h])
-        return Button(self.master, img, call=self.call, convert_alpha=True, hashed=self.hashed)
+        return Button(img, call=self.call, convert_alpha=True, hashed=self.hashed)
 
     def rotate(self, a: float):
         img = pygame.transform.rotate(self, a)
-        return Button(self.master, img, convert_alpha=self.convert2alpha)
+        return Button(img, convert_alpha=self.convert2alpha)
 
 
 class InputBox:
@@ -123,7 +122,7 @@ class Carousel(pygame.Surface):
         self.current_board = 0
         self.background_image = background_image
 
-        self.images = [Image(self, img, convert_alpha=True) for img in image_path]
+        self.images = [Image(img, convert_alpha=True) for img in image_path]
         self.buttons_side = []
         self.buttons_center = []
 
@@ -167,7 +166,7 @@ class Carousel(pygame.Surface):
 
     def convert_images2buttons(self):
         for image in self.images:
-            button = Button(self, image.image, convert_alpha=True)
+            button = Button(image.image, convert_alpha=True)
             self.buttons_side.append(button)
             self.buttons_center.append(button)
 
@@ -235,3 +234,29 @@ class Carousel(pygame.Surface):
 
     def set_position(self, pos):
         self.rect.topleft = pos
+
+
+class Number(pygame.Surface):
+    def __init__(self, number: int):
+        self.number = number
+        images = []
+        for x in str(number):
+            image = pygame.image.load(f"assets/numbers/{x}.png").convert_alpha()
+            images.append(image)
+
+        total_width = sum([image.get_width() for image in images])
+        total_height = images[0].get_height()
+
+        super().__init__((total_width, total_height), pygame.SRCALPHA, 32)
+        self.rect = self.get_rect()
+
+        w = 0
+        for image in images:
+            self.blit(image, (w, 0))
+            w += image.get_width()
+
+    def resize(self, scale_factor: float | int):
+        w, h = self.get_size()
+        new_w, new_h = w * scale_factor, h * scale_factor
+        img = pygame.transform.scale(self, [new_w, new_h])
+        return Image(img, convert_alpha=True)
