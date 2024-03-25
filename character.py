@@ -6,7 +6,7 @@ class Character:
         self.active_effect = active_effect
         self.end_effect = end_effect
 
-    def active_effect(self, player, game):
+    def active_effect(self, player, game, board, floor_of_the_row, position_in_the_row):
         if self.active_effect == "treasure_map":
             # letting the game know who is the possessor of the map
             game.treasure_map_possessor = player
@@ -14,7 +14,14 @@ class Character:
         if self.active_effect == "gunboat_act":
             player.gold += 5
         if self.active_effect == "cooker_act":
-            for columns in
+            # Adding to the player an amount of gold equal to the number of characters there are already in the row
+            # where the cooker is placed in by counting him (+1)
+            player.gold += len(board.row_list[floor_of_the_row-1]) + 1
+
+
+
+
+
 
     def end_effect(self, player, game, board):
         if self.end_effect == "gunboat_end":

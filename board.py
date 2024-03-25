@@ -25,6 +25,7 @@ class Board:
         self.row3 = []
         self.row4 = []
         self.row5 = []
+        self.row_list = []
 
 # creating a function to generate rows on the board
     def generates_rows(self):
