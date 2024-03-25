@@ -1,5 +1,5 @@
 import ctypes
-from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu
+from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu, RulesMenu
 from time import time
 from parameters import *
 
@@ -28,6 +28,7 @@ register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
 choose_board_menu = ChooseBoardMenu(screensize)
+rules_menu = RulesMenu(screensize)
 
 # load and start music
 pygame.mixer.music.load('assets/music/sot_bo.ogg')
@@ -41,11 +42,12 @@ menus = {
     REGISTER_MENU: register_menu,
     HOME_MENU: home_menu,
     GAME_MODE_MENU: game_mode_menu,
-    CHOOSE_BOARD_MENU: choose_board_menu
+    CHOOSE_BOARD_MENU: choose_board_menu,
+    RULES_MENU: rules_menu
 }
 
-game_state = CHOOSE_BOARD_MENU
-current_menu = ChooseBoardMenu(screensize)
+game_state = LOGIN_MENU
+current_menu = FirstMenu(screensize)
 
 # Variable to keep our game loop running
 running = True
@@ -80,6 +82,9 @@ while running:
         elif event.type == CHANGE_TO_CHOOSE_BOARD:
             game_state = CHOOSE_BOARD_MENU
             current_menu = menus[CHOOSE_BOARD_MENU]
+        elif event.type == CHANGE_TO_RULES:
+            game_state = RULES_MENU
+            current_menu = menus[RULES_MENU]
 
         else:
             current_menu.event_handler(event)

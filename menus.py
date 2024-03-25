@@ -9,9 +9,10 @@ class MenuBackground(pygame.Surface):
     This class is used to create a background for the menu
     """
 
-    def __init__(self, size: tuple[float, float], with_parchment=True, pre_menu_event=None):
+    def __init__(self, size: tuple[float, float], with_parchment=True, pre_menu_event=None, with_logo=True):
         super().__init__(size)
         self.with_parchment = with_parchment
+        self.with_logo = with_logo
 
         self.buttons = []
         self.hover_dict = {}
@@ -34,7 +35,8 @@ class MenuBackground(pygame.Surface):
 
         # copy the images on the surface
         self.blit(self.sea_image, self.sea_image.rect.topleft)
-        self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
+        if with_logo:
+            self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
 
         if with_parchment:
             # load parchment image
@@ -82,7 +84,8 @@ class MenuBackground(pygame.Surface):
 
     def blit_background(self):
         self.blit(self.sea_image, self.sea_image.rect.topleft)
-        self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
+        if self.with_logo:
+            self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
         if self.with_parchment:
             self.blit(self.parchment_image, self.parchment_image.rect.topleft)
         self.blit(self.close_button, self.close_button.rect.topleft)
@@ -355,28 +358,30 @@ class GameModeMenu(MenuBackground):
 
         # load images for buttons (gamemode, stats, quit)
         self.single_player_button = Button(self, "assets/buttons/single_player.png",
-                                           call=lambda: print("single_player"), convert_alpha=True)
+                                           call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
+                                           convert_alpha=True)
         self.multiplayer_button = Button(self, "assets/buttons/multiplayer.png",
                                          call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
                                          convert_alpha=True)
-        self.stats_button = Button(self, "assets/buttons/stats.png", call=lambda: print("stats"),
+        self.rules_button = Button(self, "assets/buttons/rules.png",
+                                   call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_RULES)),
                                    convert_alpha=True)
 
         # load images for the hover effect
         self.single_player_button_hover = Image(self, "assets/buttons/single_player_hover.png", convert_alpha=True)
         self.multiplayer_button_hover = Image(self, "assets/buttons/multiplayer_hover.png", convert_alpha=True)
-        self.stats_button_hover = Image(self, "assets/buttons/stats_hover.png", convert_alpha=True)
+        self.rules_button_hover = Image(self, "assets/buttons/rules_hover.png", convert_alpha=True)
 
         # resize buttons
         scale_factor = (self.parchment_image.rect.w // 4.5) / 140
         self.single_player_button = self.single_player_button.resize(scale_factor)
         self.multiplayer_button = self.multiplayer_button.resize(scale_factor)
-        self.stats_button = self.stats_button.resize(scale_factor)
+        self.stats_button = self.rules_button.resize(scale_factor)
 
         # resize hover effect
         self.single_player_button_hover = self.single_player_button_hover.resize(scale_factor)
         self.multiplayer_button_hover = self.multiplayer_button_hover.resize(scale_factor)
-        self.stats_button_hover = self.stats_button_hover.resize(scale_factor)
+        self.stats_button_hover = self.rules_button_hover.resize(scale_factor)
 
         # add hover effect to the hover_dict
         self.hover_dict[self.single_player_button.hashed] = self.single_player_button_hover
@@ -433,5 +438,130 @@ class ChooseBoardMenu(MenuBackground):
                 self.blit(self.carousel, (0, 0))
             elif self.carousel.center.rect.collidepoint(pos):
                 print("start game")
+
+        self.button_event_handler(event)
+
+
+class RulesMenu(MenuBackground):
+    def __init__(self, size):
+        super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE, with_parchment=False, with_logo=False)
+        self.current_image = 0
+        self.images = []
+
+        # load rules image
+        self.rules_image1 = Image(self, "assets/rules/rules_1.png")
+        self.rules_image2 = Image(self, "assets/rules/rules_2.png")
+        self.rules_image3 = Image(self, "assets/rules/rules_3.png")
+
+        # resize rules image
+        scale_factor = (size[0] // 2.25) / self.rules_image1.rect.w
+        self.rules_image1 = self.rules_image1.resize(scale_factor)
+        self.rules_image2 = self.rules_image2.resize(scale_factor)
+        self.rules_image3 = self.rules_image3.resize(scale_factor)
+
+        # set positions of the rules image
+        rules_pos = (size[0] // 2 - self.rules_image1.rect.w // 2, size[1] // 2 - self.rules_image1.rect.h // 2)
+        self.rules_image1.set_position(rules_pos)
+        self.rules_image2.set_position(rules_pos)
+        self.rules_image3.set_position(rules_pos)
+
+        # add images to the list
+        self.images.extend([self.rules_image1, self.rules_image2, self.rules_image3])
+
+        # load right and left buttons
+        self.left_button = Button(self, "assets/buttons/left.png", call=lambda: self.previous(),
+                                  convert_alpha=True)
+        self.right_button = Button(self, "assets/buttons/right.png", call=lambda: self.next(),
+                                   convert_alpha=True)
+
+        # load hover images
+        self.left_button_hover = Image(self, "assets/buttons/left_hover.png", convert_alpha=True)
+        self.right_button_hover = Image(self, "assets/buttons/right_hover.png", convert_alpha=True)
+
+        # resize buttons and hover images
+        scale_factor = (size[0] // 10) / 100
+        self.left_button = self.left_button.resize(scale_factor)
+        self.right_button = self.right_button.resize(scale_factor)
+        self.left_button_hover = self.left_button_hover.resize(scale_factor)
+        self.right_button_hover = self.right_button_hover.resize(scale_factor)
+
+        # set positions of the buttons and hover images
+        left_button_pos = (rules_pos[0] - self.left_button.rect.w - 40,
+                           rules_pos[1] + self.rules_image1.rect.h // 2 - self.left_button.rect.h // 2)
+        right_button_pos = (rules_pos[0] + self.rules_image1.rect.w + 40,
+                            rules_pos[1] + self.rules_image1.rect.h // 2 - self.right_button.rect.h // 2)
+
+        self.left_button.set_position(left_button_pos)
+        self.right_button.set_position(right_button_pos)
+        self.left_button_hover.set_position(left_button_pos)
+        self.right_button_hover.set_position(right_button_pos)
+
+        # load rules position image
+        self.rules_1_3 = Image(self, "assets/rules/1_3.png", convert_alpha=True)
+        self.rules_2_3 = Image(self, "assets/rules/2_3.png", convert_alpha=True)
+        self.rules_3_3 = Image(self, "assets/rules/3_3.png", convert_alpha=True)
+
+        # resize rules position image
+        scale_factor = (size[0] // 20) / self.rules_1_3.rect.w
+        self.rules_1_3 = self.rules_1_3.resize(scale_factor)
+        self.rules_2_3 = self.rules_2_3.resize(scale_factor)
+        self.rules_3_3 = self.rules_3_3.resize(scale_factor)
+
+        # set positions of the rules position image
+        rules_pos = (size[0] // 2 - self.rules_1_3.rect.w // 2,
+                     self.rules_image1.rect.y + self.rules_image1.rect.h + self.rules_1_3.rect.h // 2)
+        self.rules_1_3.set_position(rules_pos)
+        self.rules_2_3.set_position(rules_pos)
+        self.rules_3_3.set_position(rules_pos)
+        self.rules_position_images = [self.rules_1_3, self.rules_2_3, self.rules_3_3]
+
+        # copy the images on the surface
+        self.blit(self.rules_image1, self.rules_image1.rect.topleft)
+        self.blit(self.left_button, self.left_button.rect.topleft)
+        self.blit(self.right_button, self.right_button.rect.topleft)
+        self.blit(self.rules_1_3, self.rules_1_3.rect.topleft)
+
+    def next(self):
+        self.current_image = self.current_image + 1 if self.current_image < 2 else 0
+        self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
+        self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
+                  self.rules_position_images[self.current_image].rect)
+        self.blit(self.rules_position_images[self.current_image],
+                  self.rules_position_images[self.current_image].rect.topleft)
+
+    def previous(self):
+        self.current_image = self.current_image - 1 if self.current_image > 0 else 2
+        self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
+        self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
+                  self.rules_position_images[self.current_image].rect)
+        self.blit(self.rules_position_images[self.current_image],
+                  self.rules_position_images[self.current_image].rect.topleft)
+
+    def event_handler(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+            if self.left_button.rect.collidepoint(pos):
+                self.previous()
+            elif self.right_button.rect.collidepoint(pos):
+                self.next()
+        elif event.type == MOUSEMOTION:
+            mouse_pos = event.pos
+            if self.left_button.rect.collidepoint(mouse_pos):
+                if not self.left_button.hover:
+                    self.left_button.hover = True
+                    self.blit(self.left_button_hover, self.left_button.rect.topleft)
+            else:
+                if self.left_button.hover:
+                    self.left_button.hover = False
+                    self.blit(self.left_button, self.left_button.rect.topleft)
+
+            if self.right_button.rect.collidepoint(mouse_pos):
+                if not self.right_button.hover:
+                    self.right_button.hover = True
+                    self.blit(self.right_button_hover, self.right_button.rect.topleft)
+            else:
+                if self.right_button.hover:
+                    self.right_button.hover = False
+                    self.blit(self.right_button, self.right_button.rect.topleft)
 
         self.button_event_handler(event)
