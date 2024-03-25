@@ -2,9 +2,11 @@ import pygame
 
 
 class Image(pygame.Surface):
-    def __init__(self, master: pygame.Surface, img: str | pygame.Surface, convert_alpha: bool = False):
+    def __init__(self, master: pygame.Surface, img: str | pygame.Surface, convert_alpha: bool = False,
+                 hashed: int = None):
         self.master = master
         self.convert2alpha = convert_alpha
+        self.hashed = hash(self) if hashed is None else hashed
 
         # load image if img is a string
         if type(img) is str:
@@ -47,11 +49,10 @@ class Image(pygame.Surface):
 class Button(Image):
     def __init__(self, master: pygame.Surface, img_path: str | pygame.Surface, call=None, convert_alpha: bool = False,
                  hashed: int = None):
-        super().__init__(master, img_path, convert_alpha)
+        super().__init__(master, img_path, convert_alpha, hashed=hashed)
 
         self.call = call
         self.hover = False
-        self.hashed = hash(self) if hashed is None else hashed
 
     def resize(self, scale_factor: float | int):
         w, h = self.get_size()
@@ -116,19 +117,121 @@ class InputBox:
 
 
 class Carousel(pygame.Surface):
-    def __init__(self, size, image_list: list[Image]):
-        super().__init__(size)
+    def __init__(self, size, screen_size, image_path: list[str], background_image: Image):
+        super().__init__(size, pygame.SRCALPHA, 32)
         self.rect = self.get_rect()
+        self.current_board = 0
+        self.background_image = background_image
 
-        # convert
+        self.images = [Image(self, img, convert_alpha=True) for img in image_path]
+        self.buttons_side = []
+        self.buttons_center = []
 
-        self.carousel = {}
-        length = len(image_list)
-        for i, image in enumerate(image_list):
+        self.side_carousel_next = {}
+        self.side_carousel_previous = {}
+        self.center_carousel_next = {}
+        self.center_carousel_previous = {}
+
+        # convert images to buttons
+        self.convert_images2buttons()
+
+        # resize images and buttons
+        side_scale_factor = (screen_size[0] // 6) / self.buttons_side[0].rect.w
+        self.resize_components(side_scale_factor, side_scale_factor * 2)
+
+        # generate carousel
+        self.generate_carousel()
+
+        # set position of the first components
+        self.span = screen_size[0] // 30
+
+        self.left = self.buttons_side[-1]
+        self.center = self.buttons_center[0]
+        self.right = self.buttons_side[1]
+
+        self.center_topleft = (screen_size[0] // 2 - self.center.rect.w // 2,
+                               screen_size[1] // 1.6 - self.center.rect.h // 2)
+        self.left_topleft = (self.center_topleft[0] - self.left.rect.w - self.span,
+                             self.center_topleft[1] + (self.center.rect.h - self.left.rect.h) // 2)
+        self.right_topleft = (self.center_topleft[0] + self.center.rect.w + self.span,
+                              self.center_topleft[1] + (self.center.rect.h - self.right.rect.h) // 2)
+
+        self.left.set_position(self.left_topleft)
+        self.center.set_position(self.center_topleft)
+        self.right.set_position(self.right_topleft)
+
+        # blit the components
+        self.blit(self.left, self.left.rect.topleft)
+        self.blit(self.center, self.center.rect.topleft)
+        self.blit(self.right, self.right.rect.topleft)
+
+    def convert_images2buttons(self):
+        for image in self.images:
+            button = Button(self, image.image, convert_alpha=True)
+            self.buttons_side.append(button)
+            self.buttons_center.append(button)
+
+    def resize_components(self, side_scale_factor: float | int, center_scale_factor: float | int):
+        for i, button in enumerate(self.buttons_side):
+            self.buttons_side[i] = button.resize(side_scale_factor)
+        for i, button in enumerate(self.buttons_center):
+            self.buttons_center[i] = button.resize(center_scale_factor)
+
+    def generate_carousel(self):
+        length = len(self.images)
+        for i in range(length):
+            button_side = self.buttons_side[i]
+            button_center = self.buttons_center[i]
             i = i if i + 1 < length else -1
-            self.carousel[image] = image_list[i+1]
+            self.side_carousel_next[button_side.hashed] = self.buttons_side[i+1]
+            self.center_carousel_next[button_center.hashed] = self.buttons_center[i+1]
 
+        # create previous carousel
+        for i in range(length):
+            button_side = self.buttons_side[i]
+            button_center = self.buttons_center[i]
+            i = i if i - 1 > -1 else length
+            self.side_carousel_previous[button_side.hashed] = self.buttons_side[i-1]
+            self.center_carousel_previous[button_center.hashed] = self.buttons_center[i-1]
 
+    def next(self):
+        self.current_board = self.current_board if self.current_board + 1 < len(self.buttons_side) else -1
+
+        self.left = self.side_carousel_next[self.left.hashed]
+        self.center = self.center_carousel_next[self.center.hashed]
+        self.right = self.side_carousel_next[self.right.hashed]
+
+        self.left.set_position(self.left_topleft)
+        self.center.set_position(self.center_topleft)
+        self.right.set_position(self.right_topleft)
+
+        self.clean_background()
+        self.blit(self.left, self.left.rect.topleft)
+        self.blit(self.center, self.center.rect.topleft)
+        self.blit(self.right, self.right.rect.topleft)
+
+    def previous(self):
+        self.current_board = self.current_board if self.current_board - 1 > -1 else len(self.buttons_side)
+
+        self.left = self.side_carousel_previous[self.left.hashed]
+        self.center = self.center_carousel_previous[self.center.hashed]
+        self.right = self.side_carousel_previous[self.right.hashed]
+
+        self.left.set_position(self.left_topleft)
+        self.center.set_position(self.center_topleft)
+        self.right.set_position(self.right_topleft)
+
+        self.clean_background()
+        self.blit(self.left, self.left.rect.topleft)
+        self.blit(self.center, self.center.rect.topleft)
+        self.blit(self.right, self.right.rect.topleft)
+
+    def clean_background(self):
+        w = self.left.rect.w + self.center.rect.w + self.right.rect.w + 2 * self.span
+        h = self.center.rect.h
+        x, y = self.center_topleft
+        x -= self.left.rect.w
+        self.blit(self.background_image, (x, y), (x, y, w, h))
 
     def set_position(self, pos):
         self.rect.topleft = pos

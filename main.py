@@ -1,4 +1,3 @@
-import pygame
 import ctypes
 from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu
 from time import time
@@ -10,6 +9,7 @@ pygame.init()
 
 # get screen size
 user32 = ctypes.windll.user32
+user32.SetProcessDPIAware()  # corrects the resolution of the screen
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 # define dimension of pygame screen (width,height)
@@ -28,6 +28,11 @@ register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
 choose_board_menu = ChooseBoardMenu(screensize)
+
+# load and start music
+pygame.mixer.music.load('assets/music/sot_bo.ogg')
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1)
 
 # create dictionary to store menus
 menus = {

@@ -1,4 +1,4 @@
-from widgets import Image, Button, InputBox
+from widgets import Image, Button, InputBox, Carousel
 from pygame.locals import *
 from database import Database
 from parameters import *
@@ -11,6 +11,7 @@ class MenuBackground(pygame.Surface):
 
     def __init__(self, size: tuple[float, float], with_parchment=True, pre_menu_event=None):
         super().__init__(size)
+        self.with_parchment = with_parchment
 
         self.buttons = []
         self.hover_dict = {}
@@ -78,6 +79,14 @@ class MenuBackground(pygame.Surface):
             self.buttons.append(self.backward_button)
             self.hover_dict[self.backward_button.hashed] = self.backward_button_hover
             self.blit(self.backward_button, self.backward_button.rect.topleft)
+
+    def blit_background(self):
+        self.blit(self.sea_image, self.sea_image.rect.topleft)
+        self.blit(self.captain_flip_image, self.captain_flip_image.rect.topleft)
+        if self.with_parchment:
+            self.blit(self.parchment_image, self.parchment_image.rect.topleft)
+        self.blit(self.close_button, self.close_button.rect.topleft)
+        self.blit(self.backward_button, self.backward_button.rect.topleft)
 
     def button_event_handler(self, event):
         if event.type == MOUSEBUTTONDOWN:
@@ -409,34 +418,20 @@ class ChooseBoardMenu(MenuBackground):
     def __init__(self, size):
         super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE, with_parchment=False)
 
-        self.board_images = {}
-        self.board_buttons = {}
-        self.carrousel = {}
+        self.carousel = Carousel(size, size, [f"assets/boards/board_{i}.png" for i in range(1, 6)], self.sea_image)
 
-        # initialize boards images
-        self.board_a_image = Image(self, "assets/boards/board_a.png", convert_alpha=True)
-        self.board_b_image = Image(self, "assets/boards/board_b.png", convert_alpha=True)
-        self.board_c_image = Image(self, "assets/boards/board_c.png", convert_alpha=True)
-
-        # resize boards to smaller ones
-        self.board_a_image = self.board_a_image.resize((size[0] // 5) / self.board_a_image.rect.w)
-        self.board_b_image = self.board_b_image.resize((size[0] // 5) / self.board_b_image.rect.w)
-        self.board_c_image = self.board_c_image.resize((size[0] // 5) / self.board_c_image.rect.w)
-
-        # rotate the images
-        self.board_a_image = self.board_a_image.rotate(270)
-        self.board_b_image = self.board_a_image.rotate(270)
-        self.board_c_image = self.board_a_image.rotate(270)
-
-        # initialize boards images as buttons
-        self.board_a_button = Button(self, "assets/boards/board_a.png",
-                                     call=lambda: print("board_a"), convert_alpha=True)
-        self.board_b_button = Button(self, "assets/boards/board_b.png",
-                                     call=lambda: print("board_b"), convert_alpha=True)
-        self.board_c_button = Button(self, "assets/boards/board_c.png",
-                                     call=lambda: print("board_c"), convert_alpha=True)
-
-        self.blit(self.board_a_image, (0, 0))
+        self.blit(self.carousel, (0, 0))
 
     def event_handler(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+            if self.carousel.left.rect.collidepoint(pos):
+                self.carousel.previous()
+                self.blit(self.carousel, (0, 0))
+            elif self.carousel.right.rect.collidepoint(pos):
+                self.carousel.next()
+                self.blit(self.carousel, (0, 0))
+            elif self.carousel.center.rect.collidepoint(pos):
+                print("start game")
+
         self.button_event_handler(event)
