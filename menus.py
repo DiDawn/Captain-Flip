@@ -245,8 +245,8 @@ class HomeMenu(MenuBackground):
 
 
 class LoginMenu(MenuBackground):
-    def __init__(self, size, mode):
-        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST, player=None)
+    def __init__(self, size, mode, player=None):
+        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
 
         self.db = Database("database.csv")
         self.mode = mode
