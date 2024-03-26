@@ -98,6 +98,9 @@ while running:
             current_menu = menus[STATS_MENU]
         elif event.type == UPDATE_STATS:
             stats_menu.update_stats(player.stats)
+        elif event.type == RESET_PLAYER:
+            player = Player()
+            stats_menu.update_stats(player.stats)
             
         else:
             current_menu.event_handler(event)
