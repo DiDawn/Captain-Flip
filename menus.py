@@ -246,10 +246,11 @@ class HomeMenu(MenuBackground):
 
 class LoginMenu(MenuBackground):
     def __init__(self, size, mode):
-        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST)
+        super().__init__(size, pre_menu_event=CHANGE_TO_FIRST, player=None)
 
         self.db = Database("database.csv")
         self.mode = mode
+        self.player = player
 
         # rotate parchment
         self.parchment_image = self.parchment_image.rotate(90)
@@ -314,12 +315,13 @@ class LoginMenu(MenuBackground):
         username = self.input_box_username.text
         password = self.input_box_password.text
 
-        if self.db.sign_in(username, password):
-            print("logged in")
+        result = self.db.sign_in(username, password)
+        if result:
+            self.player.stats = (self.db.victories, self.db.defeats, self.db.draws)
+            pygame.event.post(pygame.event.Event(UPDATE_STATS))
+            pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
         else:
             print("wrong username or password")
-
-        pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
 
     def register(self):
         username = self.input_box_username.text
