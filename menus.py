@@ -587,21 +587,21 @@ class StatsMenu(MenuBackground):
         self.blit_background()
 
         # load stats image
-        self.wins_image = Image("assets/stats/wins.png")
-        self.losses_image = Image("assets/stats/losses.png")
-        self.draws_image = Image("assets/stats/draws.png")
+        self.wins_image = Image("assets/stats/wins.png", convert_alpha=True)
+        self.losses_image = Image("assets/stats/losses.png", convert_alpha=True)
+        self.draws_image = Image("assets/stats/draws.png", convert_alpha=True)
 
         # resize stats image
-        scale_factor = (size[0] // 2.25) / self.wins_image.rect.w
+        scale_factor = (size[0] // 12.5) / self.wins_image.rect.w
         self.wins_image = self.wins_image.resize(scale_factor)
         self.losses_image = self.losses_image.resize(scale_factor)
         self.draws_image = self.draws_image.resize(scale_factor)
 
         # set positions of the stats image
-        stats_pos = (size[0] // 2 - self.wins_image.rect.w // 2, size[1] // 2 - self.wins_image.rect.h // 2)
+        stats_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_image.set_position(stats_pos)
-        self.losses_image.set_position(stats_pos)
-        self.draws_image.set_position(stats_pos)
+        self.losses_image.set_position((stats_pos[0], stats_pos[1] + self.parchment_image.rect.h // 5.5))
+        self.draws_image.set_position((stats_pos[0], stats_pos[1] + self.parchment_image.rect.h // 2.75))
 
         # blit stats image
         self.blit(self.wins_image, self.wins_image.rect.topleft)
@@ -614,21 +614,23 @@ class StatsMenu(MenuBackground):
         self.draws_number = Number(0)
 
         # resize number images
-        self.number_scale_factor = (size[0] // 2.25) / self.wins_number.rect.w
+        self.number_scale_factor = (size[0] // 35) / self.wins_number.rect.w
         self.wins_number = self.wins_number.resize(self.number_scale_factor)
         self.losses_number = self.losses_number.resize(self.number_scale_factor)
         self.draws_number = self.draws_number.resize(self.number_scale_factor)
 
         # set positions of the number images
-        number_pos = (size[0] // 2 - self.wins_number.rect.w // 2, size[1] // 2 + self.wins_number.rect.h)
+        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_number.set_position(number_pos)
-        self.losses_number.set_position(number_pos)
-        self.draws_number.set_position(number_pos)
+        self.losses_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 5.5))
+        self.draws_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 2.75))
 
         # blit number images
         self.blit(self.wins_number, self.wins_number.rect.topleft)
         self.blit(self.losses_number, self.losses_number.rect.topleft)
         self.blit(self.draws_number, self.draws_number.rect.topleft)
+        
+        self.update_stats((2, 4, 18))
 
     def update_stats(self, new_stats: tuple[int, int, int]):
         self.wins_number = Number(new_stats[0])
@@ -641,11 +643,22 @@ class StatsMenu(MenuBackground):
         self.draws_number = self.draws_number.resize(self.number_scale_factor)
 
         # set positions of the number images
-        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 2 - self.wins_number.rect.w // 2,
-                      self.parchment_image.rect.y + self.parchment_image.rect.h // 2 + self.wins_number.rect.h)
+        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_number.set_position(number_pos)
-        self.losses_number.set_position(number_pos)
-        self.draws_number.set_position(number_pos)
+        self.losses_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 5.5))
+        self.draws_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 2.75))
+        
+        # blit number images
+        self.blit_background()
+        self.blit(self.wins_image, self.wins_image.rect.topleft)
+        self.blit(self.losses_image, self.losses_image.rect.topleft)
+        self.blit(self.draws_image, self.draws_image.rect.topleft)
+        self.blit(self.wins_number, self.wins_number.rect.topleft)
+        self.blit(self.losses_number, self.losses_number.rect.topleft)
+        self.blit(self.draws_number, self.draws_number.rect.topleft)
+        
+    def event_handler(self, event):
+        self.button_event_handler(event)
 
     def event_handler(self, event):
         self.button_event_handler(event)
