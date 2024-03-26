@@ -33,7 +33,7 @@ class Database:
                     self.victories = row[2]
                     self.draws = row[3]
                     self.defeats = row[4]
-                    return True
+                    return row[2], row[3], row[4]
         return False
 
     # function to return the stats of the player
