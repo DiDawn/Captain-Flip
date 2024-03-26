@@ -167,7 +167,9 @@ class Carousel(pygame.Surface):
     def convert_images2buttons(self):
         for image in self.images:
             button = Button(image.image, convert_alpha=True)
-            self.buttons_side.append(button)
+            button_side = Button(image.image, convert_alpha=True)
+            button_side.set_alpha(255//2)
+            self.buttons_side.append(button_side)
             self.buttons_center.append(button)
 
     def resize_components(self, side_scale_factor: float | int, center_scale_factor: float | int):
@@ -229,7 +231,7 @@ class Carousel(pygame.Surface):
         w = self.left.rect.w + self.center.rect.w + self.right.rect.w + 2 * self.span
         h = self.center.rect.h
         x, y = self.center_topleft
-        x -= self.left.rect.w
+        x -= self.left.rect.w + self.span
         self.blit(self.background_image, (x, y), (x, y, w, h))
 
     def set_position(self, pos):
