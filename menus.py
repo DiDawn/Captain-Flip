@@ -330,7 +330,7 @@ class LoginMenu(MenuBackground):
         self.db.sign_up(username, password)
 
         pygame.event.post(pygame.event.Event(RESET_PLAYER))
-        pygame.event.post(pygame.event.Event(CHANGE_TO_GAMEMODE))
+        pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
 
     def event_handler(self, event):
         self.button_event_handler(event)
