@@ -2,6 +2,7 @@ import ctypes
 from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu, RulesMenu, StatsMenu
 from time import time
 from parameters import *
+from player import Player
 
 
 # init pygame module
@@ -21,9 +22,12 @@ pygame.display.set_caption('Captain FLip')
 # Update the display using flip
 pygame.display.flip()
 
+# init player
+player = Player()
+
 # init menus
 first_menu = FirstMenu(screensize)
-login_menu = LoginMenu(screensize, "login")
+login_menu = LoginMenu(screensize, "login", player=player)
 register_menu = LoginMenu(screensize, "register")
 home_menu = HomeMenu(screensize)
 game_mode_menu = GameModeMenu(screensize)
