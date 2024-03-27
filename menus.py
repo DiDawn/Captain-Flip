@@ -5,7 +5,6 @@ from pygame.locals import *
 from database import Database
 from parameters import *
 from threading import Thread
-from time import sleep
 
 
 class MenuBackground(pygame.Surface):
@@ -327,6 +326,8 @@ class LoginMenu(MenuBackground):
         else:
             self.input_box_password.wrong_input = True
             self.input_box_username.wrong_input = True
+            self.input_box_username.text = ""
+            self.input_box_password.text = ""
             print("wrong username or password")
 
     def register(self):
@@ -342,6 +343,8 @@ class LoginMenu(MenuBackground):
         else:
             self.input_box_password.wrong_input = True
             self.input_box_username.wrong_input = True
+            self.input_box_username.text = ""
+            self.input_box_password.text = ""
             print("username already exists")
 
     def event_handler(self, event):
@@ -622,7 +625,8 @@ class StatsMenu(MenuBackground):
         self.draws_image = self.draws_image.resize(scale_factor)
 
         # set positions of the stats image
-        stats_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
+        stats_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 5,
+                     self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_image.set_position(stats_pos)
         self.losses_image.set_position((stats_pos[0], stats_pos[1] + self.parchment_image.rect.h // 5.5))
         self.draws_image.set_position((stats_pos[0], stats_pos[1] + self.parchment_image.rect.h // 2.75))
@@ -644,7 +648,8 @@ class StatsMenu(MenuBackground):
         self.draws_number = self.draws_number.resize(self.number_scale_factor)
 
         # set positions of the number images
-        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
+        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5,
+                      self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_number.set_position(number_pos)
         self.losses_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 5.5))
         self.draws_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 2.75))
@@ -667,7 +672,8 @@ class StatsMenu(MenuBackground):
         self.draws_number = self.draws_number.resize(self.number_scale_factor)
 
         # set positions of the number images
-        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5, self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
+        number_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w - self.parchment_image.rect.w // 2.5,
+                      self.parchment_image.rect.y + self.parchment_image.rect.h // 3.5)
         self.wins_number.set_position(number_pos)
         self.losses_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 5.5))
         self.draws_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 2.75))
