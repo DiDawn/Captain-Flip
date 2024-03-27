@@ -18,10 +18,18 @@ class Database:
 
     # function to sign up
     def sign_up(self, identifier, password):
+        # verify if the identifier is already in the database
+        with open(self.file, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if row[0] == identifier:
+                    return False
+
         with open(self.file, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
             password_hash = self.encryption(password)
             writer.writerow([identifier, password_hash, 0, 0, 0])
+        return True
 
     # function to sign in and recover the statistics of the player
     def sign_in(self, identifier, password):
