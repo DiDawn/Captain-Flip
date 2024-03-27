@@ -4,6 +4,8 @@ from widgets import Image, Button, InputBox, Carousel, Number
 from pygame.locals import *
 from database import Database
 from parameters import *
+from threading import Thread
+from time import sleep
 
 
 class MenuBackground(pygame.Surface):
@@ -443,16 +445,25 @@ class ChooseBoardMenu(MenuBackground):
     def event_handler(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = event.pos
-            if self.carousel.left.rect.collidepoint(pos):
-                self.carousel.previous()
-                self.blit(self.carousel, (0, 0))
-            elif self.carousel.right.rect.collidepoint(pos):
-                self.carousel.next()
-                self.blit(self.carousel, (0, 0))
-            elif self.carousel.center.rect.collidepoint(pos):
+            if self.carousel.left.rect.collidepoint(pos) and not self.carousel.swiping:
+                self.carousel.activate_swipe("previous")
+                self.start_swipe_loop()
+            elif self.carousel.right.rect.collidepoint(pos) and not self.carousel.swiping:
+                self.carousel.activate_swipe("next")
+                self.start_swipe_loop()
+            elif self.carousel.center.rect.collidepoint(pos) and not self.carousel.swiping:
                 print("start game")
 
         self.button_event_handler(event)
+
+    def start_swipe_loop(self):
+        thread = Thread(target=self.update_swipe_loop)
+        thread.start()
+
+    def update_swipe_loop(self):
+        while self.carousel.swiping:
+            self.carousel.increase_swipe()
+            self.blit(self.carousel, (0, 0))
 
 
 class RulesMenu(MenuBackground):

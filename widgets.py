@@ -70,6 +70,7 @@ class InputBox:
         self.under_text_color = pygame.Color((75, 75, 75))
         self.color_inactive = pygame.Color((0, 0, 0))
         self.color_active = pygame.Color((4, 54, 130))
+        self.color_wrong_input = pygame.Color((255, 0, 0))
         self.color = self.color_inactive
         self.text = text
         self.font = pygame.font.Font(None, 48)
@@ -77,6 +78,7 @@ class InputBox:
         self.txt_surface = self.font.render(text, True, self.color)
         self.under_text_surface = self.under_text_font.render(under_text, True, self.under_text_color)
         self.active = False
+        self.wrong_input = False
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -112,7 +114,10 @@ class InputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+10, self.rect.y+10))
         # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 5, border_radius=15)
+        if self.wrong_input and not self.active:
+            pygame.draw.rect(screen, self.color_wrong_input, self.rect, 5, border_radius=15)
+        else:
+            pygame.draw.rect(screen, self.color, self.rect, 5, border_radius=15)
 
 
 class Carousel(pygame.Surface):
@@ -121,6 +126,12 @@ class Carousel(pygame.Surface):
         self.rect = self.get_rect()
         self.current_board = 0
         self.background_image = background_image
+        self.swiping = False
+        self.swipe_mode = None
+        self.max_swipe_state = 50
+        self.swipe_state = 0
+        self.swiping_images = []
+        self.side_alpha = 150
 
         self.images = [Image(img, convert_alpha=True) for img in image_path]
         self.buttons_side = []
@@ -135,8 +146,9 @@ class Carousel(pygame.Surface):
         self.convert_images2buttons()
 
         # resize images and buttons
-        side_scale_factor = (screen_size[0] // 6) / self.buttons_side[0].rect.w
-        self.resize_components(side_scale_factor, side_scale_factor * 2)
+        self.side_scale_factor = (screen_size[0] // 6) / self.buttons_side[0].rect.w
+        self.center_scale_factor = self.side_scale_factor * 2
+        self.resize_components(self.side_scale_factor, self.center_scale_factor)
 
         # generate carousel
         self.generate_carousel()
@@ -168,7 +180,7 @@ class Carousel(pygame.Surface):
         for image in self.images:
             button = Button(image.image, convert_alpha=True)
             button_side = Button(image.image, convert_alpha=True)
-            button_side.set_alpha(255//2)
+            button_side.set_alpha(self.side_alpha)
             self.buttons_side.append(button_side)
             self.buttons_center.append(button)
 
@@ -236,6 +248,127 @@ class Carousel(pygame.Surface):
 
     def set_position(self, pos):
         self.rect.topleft = pos
+
+    def swipe_image(self, image, mode: str):
+        swipe_state = self.swipe_state / self.max_swipe_state
+        match mode:
+            case 'left_side2center':
+                scale_range = abs(1 - self.center_scale_factor / self.side_scale_factor)
+                print(scale_range)
+                scale_factor = 1 + scale_range * swipe_state
+                alpha_range = 255 - self.side_alpha
+                alpha = self.side_alpha + alpha_range * swipe_state
+                distance_x = abs(self.center_topleft[0] - self.left_topleft[0])
+                distance_y = abs(self.center_topleft[1] - self.left_topleft[1])
+                new_x = self.left_topleft[0] + distance_x * swipe_state
+                new_y = self.left_topleft[1] - distance_y * swipe_state
+            case 'right_side2center':
+                scale_range = abs(1 - self.center_scale_factor / self.side_scale_factor)
+                scale_factor = 1 + scale_range * swipe_state
+                alpha_range = 255 - self.side_alpha
+                alpha = self.side_alpha + alpha_range * swipe_state
+                distance_x = abs(self.center_topleft[0] - self.right_topleft[0])
+                distance_y = abs(self.center_topleft[1] - self.right_topleft[1])
+                new_x = self.right_topleft[0] - distance_x * swipe_state
+                new_y = self.right_topleft[1] - distance_y * swipe_state
+
+            case 'center2left_side':
+                scale_range = self.side_scale_factor / self.center_scale_factor
+                scale_factor = 1 - scale_range * swipe_state
+                alpha_range = 255 - self.side_alpha
+                alpha = 255 - alpha_range * swipe_state
+                distance_x = abs(self.center_topleft[0] - self.left_topleft[0])
+                distance_y = abs(self.center_topleft[1] - self.left_topleft[1])
+                new_x = self.center_topleft[0] - distance_x * swipe_state
+                new_y = self.center_topleft[1] + distance_y * swipe_state
+            case 'center2right_side':
+                scale_range = self.side_scale_factor / self.center_scale_factor
+                scale_factor = 1 - scale_range * swipe_state
+                alpha_range = 255 - self.side_alpha
+                alpha = 255 - alpha_range * swipe_state
+                distance_x = abs(self.right_topleft[0] - self.center_topleft[0])
+                distance_y = abs(self.right_topleft[1] - self.center_topleft[1])
+                new_x = self.center_topleft[0] + distance_x * swipe_state
+                new_y = self.center_topleft[1] + distance_y * swipe_state
+
+            case 'side2nowhere':
+                scale_factor = 1
+                alpha = self.side_alpha * (1 - swipe_state)
+                new_x, new_y = image.rect.topleft
+
+            case 'nowhere2side':
+                scale_factor = 1
+                alpha = self.side_alpha * swipe_state
+                new_x, new_y = image.rect.topleft
+            case _:
+                raise Exception("Invalid mode")
+
+        image = image.resize(scale_factor)
+        image.set_alpha(alpha)
+        image.set_position((new_x, new_y))
+
+        return image
+
+    def activate_swipe(self, mode: str):
+        self.swiping = True
+        if mode == 'previous':
+            self.swipe_mode = 'previous'
+            # swipe new image to the left one
+            new_left = self.side_carousel_previous[self.left.hashed]
+            new_left.set_position(self.left_topleft)
+            new_center = self.left
+            new_right = self.center
+            gone_right = self.right
+            self.swiping_images = [new_left, new_center, new_right, gone_right]
+        elif mode == 'next':
+            self.swipe_mode = 'next'
+            # swipe new image to the right one
+            new_left = self.center
+            new_center = self.right
+            new_right = self.side_carousel_next[self.right.hashed]
+            new_right.set_position(self.right_topleft)
+            gone_left = self.left
+            self.swiping_images = [new_left, new_center, new_right, gone_left]
+
+    def increase_swipe(self):
+        # refresh the background
+        self.clean_background()
+        if self.swipe_state == self.max_swipe_state:
+            self.swiping = False
+            self.swipe_state = 0
+            if self.swipe_mode == 'next':
+                self.next()
+            elif self.swipe_mode == 'previous':
+                self.previous()
+            return
+
+        self.swipe_state += 1
+
+        if self.swipe_mode == "previous":
+            # swipe the new images to the left
+            new_left = self.swipe_image(self.swiping_images[0], 'nowhere2side')
+            new_center = self.swipe_image(self.swiping_images[1], 'left_side2center')
+            new_right = self.swipe_image(self.swiping_images[2], 'center2right_side')
+            gone_right = self.swipe_image(self.swiping_images[3], 'side2nowhere')
+
+            # blit the new images
+            self.blit(new_left, new_left.rect.topleft)
+            self.blit(new_center, new_center.rect.topleft)
+            self.blit(new_right, new_right.rect.topleft)
+            self.blit(gone_right, gone_right.rect.topleft)
+
+        elif self.swipe_mode == "next":
+            # swipe the new images to the right
+            new_left = self.swipe_image(self.swiping_images[0], 'center2left_side')
+            new_center = self.swipe_image(self.swiping_images[1], 'right_side2center')
+            new_right = self.swipe_image(self.swiping_images[2], 'nowhere2side')
+            gone_left = self.swipe_image(self.swiping_images[3], 'side2nowhere')
+
+            # blit the new images
+            self.blit(new_left, new_left.rect.topleft)
+            self.blit(new_center, new_center.rect.topleft)
+            self.blit(new_right, new_right.rect.topleft)
+            self.blit(gone_left, gone_left.rect.topleft)
 
 
 class Number(pygame.Surface):
