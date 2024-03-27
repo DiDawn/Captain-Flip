@@ -317,20 +317,30 @@ class LoginMenu(MenuBackground):
 
         result = self.db.sign_in(username, password)
         if result:
+            self.input_box_password.wrong_input = False
+            self.input_box_username.wrong_input = False
             self.player.stats = (self.db.victories, self.db.defeats, self.db.draws)
             pygame.event.post(pygame.event.Event(UPDATE_STATS))
             pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
         else:
+            self.input_box_password.wrong_input = True
+            self.input_box_username.wrong_input = True
             print("wrong username or password")
 
     def register(self):
         username = self.input_box_username.text
         password = self.input_box_password.text
 
-        self.db.sign_up(username, password)
-
-        pygame.event.post(pygame.event.Event(RESET_PLAYER))
-        pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
+        result = self.db.sign_up(username, password)
+        if result:
+            self.input_box_password.wrong_input = False
+            self.input_box_username.wrong_input = False
+            pygame.event.post(pygame.event.Event(RESET_PLAYER))
+            pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
+        else:
+            self.input_box_password.wrong_input = True
+            self.input_box_username.wrong_input = True
+            print("username already exists")
 
     def event_handler(self, event):
         self.button_event_handler(event)
@@ -660,8 +670,5 @@ class StatsMenu(MenuBackground):
         self.blit(self.losses_number, self.losses_number.rect.topleft)
         self.blit(self.draws_number, self.draws_number.rect.topleft)
         
-    def event_handler(self, event):
-        self.button_event_handler(event)
-
     def event_handler(self, event):
         self.button_event_handler(event)
