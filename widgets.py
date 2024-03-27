@@ -128,7 +128,7 @@ class Carousel(pygame.Surface):
         self.background_image = background_image
         self.swiping = False
         self.swipe_mode = None
-        self.max_swipe_state = 50
+        self.max_swipe_state = 35
         self.swipe_state = 0
         self.swiping_images = []
         self.side_alpha = 150
@@ -254,7 +254,6 @@ class Carousel(pygame.Surface):
         match mode:
             case 'left_side2center':
                 scale_range = abs(1 - self.center_scale_factor / self.side_scale_factor)
-                print(scale_range)
                 scale_factor = 1 + scale_range * swipe_state
                 alpha_range = 255 - self.side_alpha
                 alpha = self.side_alpha + alpha_range * swipe_state

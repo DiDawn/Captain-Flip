@@ -5,6 +5,7 @@ from pygame.locals import *
 from database import Database
 from parameters import *
 from threading import Thread
+from sound_effects import SoundEffects
 
 
 class MenuBackground(pygame.Surface):
@@ -549,6 +550,7 @@ class RulesMenu(MenuBackground):
         self.blit(self.rules_1_3, self.rules_1_3.rect.topleft)
 
     def next(self):
+        SoundEffects.page_flip.play()
         self.current_image = self.current_image + 1 if self.current_image < 2 else 0
         self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
         self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
@@ -557,6 +559,7 @@ class RulesMenu(MenuBackground):
                   self.rules_position_images[self.current_image].rect.topleft)
 
     def previous(self):
+        SoundEffects.page_flip.play()
         self.current_image = self.current_image - 1 if self.current_image > 0 else 2
         self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
         self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
