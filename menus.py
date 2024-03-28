@@ -15,6 +15,9 @@ class MenuBackground(pygame.Surface):
 
     def __init__(self, size: tuple[float, float], with_parchment=True, pre_menu_event=None, with_logo=True):
         super().__init__(size)
+        self.sound_effects = SoundEffects()
+        self.sound_effects.init_sound_effects(["button"])
+
         self.with_parchment = with_parchment
         self.with_logo = with_logo
 
@@ -100,6 +103,7 @@ class MenuBackground(pygame.Surface):
             mouse_pos = event.pos  # coordinates of click point.
             for button in self.buttons:
                 if button.rect.collidepoint(mouse_pos):
+                    self.sound_effects.play("button")
                     button.call()
         elif event.type == MOUSEMOTION:
             mouse_pos = event.pos
@@ -374,6 +378,7 @@ class LoginMenu(MenuBackground):
                         active_box.draw(self)
                         break
             elif event.key == pygame.K_RETURN:
+                self.sound_effects.play("button")
                 if self.mode == "login":
                     self.login()
                 else:
@@ -516,7 +521,6 @@ class RulesMenu(MenuBackground):
         super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE, with_parchment=False, with_logo=False)
         self.current_image = 0
         self.images = []
-        self.sound_effects = SoundEffects()
         self.sound_effects.init_sound_effects(["page_flip"])
 
         # load rules image
