@@ -4,7 +4,6 @@ from time import time
 from parameters import *
 from player import Player
 
-
 # init pygame module
 pygame.init()
 
@@ -37,7 +36,7 @@ stats_menu = StatsMenu(screensize)
 
 # load and start music
 pygame.mixer.music.load('assets/music/sot_bo.ogg')
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
 
 # create dictionary to store menus
@@ -103,7 +102,7 @@ while running:
         elif event.type == RESET_PLAYER:
             player = Player()
             stats_menu.update_stats(player.stats)
-            
+
         else:
             current_menu.event_handler(event)
 
@@ -113,11 +112,11 @@ while running:
 
     # show fps
     delta = time() - time0
-    fps = 1/delta if delta != 0 else 1200
+    fps = 1 / delta if delta != 0 else 1200
     length = len(fps_a)
     if length != 1000:
         fps_a.append(fps)
     else:
-        print(sum(fps_a)/length)
+        print(sum(fps_a) / length)
         fps_a = []
     time0 = time()

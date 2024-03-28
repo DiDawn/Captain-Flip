@@ -327,8 +327,12 @@ class LoginMenu(MenuBackground):
         else:
             self.input_box_password.wrong_input = True
             self.input_box_username.wrong_input = True
+            self.input_box_username.active = False
+            self.input_box_password.active = False
             self.input_box_username.text = ""
             self.input_box_password.text = ""
+            self.input_box_password.update_text_surface()
+            self.input_box_username.update_text_surface()
             print("wrong username or password")
 
     def register(self):
@@ -344,12 +348,36 @@ class LoginMenu(MenuBackground):
         else:
             self.input_box_password.wrong_input = True
             self.input_box_username.wrong_input = True
+            self.input_box_username.active = False
+            self.input_box_password.active = False
             self.input_box_username.text = ""
             self.input_box_password.text = ""
+            self.input_box_password.update_text_surface()
+            self.input_box_username.update_text_surface()
             print("username already exists")
 
     def event_handler(self, event):
         self.button_event_handler(event)
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB:
+                for box in self.input_boxes:
+                    if box.active:
+                        box.active = False
+                        box.color = box.color_inactive
+                        box.draw(self)
+                        index = self.input_boxes.index(box)
+                        next_index = index + 1 if index < len(self.input_boxes) - 1 else 0
+                        active_box = self.input_boxes[next_index]
+                        active_box.active = True
+                        active_box.color = active_box.color_active
+                        active_box.draw(self)
+                        break
+            elif event.key == pygame.K_RETURN:
+                if self.mode == "login":
+                    self.login()
+                else:
+                    self.register()
 
         for box in self.input_boxes:
             box.handle_event(event)
@@ -456,9 +484,22 @@ class ChooseBoardMenu(MenuBackground):
                 self.carousel.activate_swipe("next")
                 self.start_swipe_loop()
             elif self.carousel.center.rect.collidepoint(pos) and not self.carousel.swiping:
-                print("start game")
+                self.start_game()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT and not self.carousel.swiping:
+                self.carousel.activate_swipe("previous")
+                self.start_swipe_loop()
+            elif event.key == pygame.K_RIGHT and not self.carousel.swiping:
+                self.carousel.activate_swipe("next")
+                self.start_swipe_loop()
+            elif event.key == pygame.K_RETURN and not self.carousel.swiping:
+                self.start_game()
 
         self.button_event_handler(event)
+
+    def start_game(self):
+        print(f"starting game with board{self.carousel.current_board}")
 
     def start_swipe_loop(self):
         thread = Thread(target=self.update_swipe_loop)
@@ -475,6 +516,8 @@ class RulesMenu(MenuBackground):
         super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE, with_parchment=False, with_logo=False)
         self.current_image = 0
         self.images = []
+        self.sound_effects = SoundEffects()
+        self.sound_effects.init_sound_effects(["page_flip"])
 
         # load rules image
         self.rules_image1 = Image("assets/rules/rules_1.png")
@@ -550,22 +593,25 @@ class RulesMenu(MenuBackground):
         self.blit(self.rules_1_3, self.rules_1_3.rect.topleft)
 
     def next(self):
-        SoundEffects.page_flip.play()
+        self.sound_effects.play("page_flip")
         self.current_image = self.current_image + 1 if self.current_image < 2 else 0
         self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
-        self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
-                  self.rules_position_images[self.current_image].rect)
+        self.cover_previous()
         self.blit(self.rules_position_images[self.current_image],
                   self.rules_position_images[self.current_image].rect.topleft)
 
     def previous(self):
-        SoundEffects.page_flip.play()
+        self.sound_effects.play("page_flip")
         self.current_image = self.current_image - 1 if self.current_image > 0 else 2
         self.blit(self.images[self.current_image], self.images[self.current_image].rect.topleft)
-        self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft,
-                  self.rules_position_images[self.current_image].rect)
+        self.cover_previous()
         self.blit(self.rules_position_images[self.current_image],
                   self.rules_position_images[self.current_image].rect.topleft)
+
+    def cover_previous(self):
+        rect = self.rules_position_images[self.current_image].rect
+        rect.w += rect.w * 0.1
+        self.blit(self.sea_image, self.rules_position_images[self.current_image].rect.topleft, rect)
 
     def event_handler(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -593,6 +639,12 @@ class RulesMenu(MenuBackground):
                 if self.right_button.hover:
                     self.right_button.hover = False
                     self.blit(self.right_button, self.right_button.rect.topleft)
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self.previous()
+            elif event.key == pygame.K_RIGHT:
+                self.next()
 
         self.button_event_handler(event)
 

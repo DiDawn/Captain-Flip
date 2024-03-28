@@ -65,7 +65,7 @@ class Button(Image):
 
 
 class InputBox:
-    def __init__(self, x, y, w, h, text='', under_text=''):
+    def __init__(self, x, y, w, h, text='', under_text='', background_image: Image = None):
         self.rect = pygame.Rect(x, y, w, h)
         self.under_text_color = pygame.Color((75, 75, 75))
         self.color_inactive = pygame.Color((0, 0, 0))
@@ -97,6 +97,8 @@ class InputBox:
                     self.text = ''
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
+                elif event.key == pygame.K_TAB:
+                    pass
                 else:
                     self.text += event.unicode
                 # Re-render the text.
@@ -118,6 +120,9 @@ class InputBox:
             pygame.draw.rect(screen, self.color_wrong_input, self.rect, 5, border_radius=15)
         else:
             pygame.draw.rect(screen, self.color, self.rect, 5, border_radius=15)
+
+    def update_text_surface(self):
+        self.txt_surface = self.font.render(self.text, True, self.color)
 
 
 class Carousel(pygame.Surface):
@@ -208,7 +213,7 @@ class Carousel(pygame.Surface):
             self.center_carousel_previous[button_center.hashed] = self.buttons_center[i-1]
 
     def next(self):
-        self.current_board = self.current_board if self.current_board + 1 < len(self.buttons_side) else -1
+        self.current_board = self.current_board + 1 if self.current_board + 1 < len(self.buttons_side) else 0
 
         self.left = self.side_carousel_next[self.left.hashed]
         self.center = self.center_carousel_next[self.center.hashed]
@@ -224,7 +229,7 @@ class Carousel(pygame.Surface):
         self.blit(self.right, self.right.rect.topleft)
 
     def previous(self):
-        self.current_board = self.current_board if self.current_board - 1 > -1 else len(self.buttons_side)
+        self.current_board = self.current_board - 1 if self.current_board - 1 > -1 else len(self.buttons_side)
 
         self.left = self.side_carousel_previous[self.left.hashed]
         self.center = self.center_carousel_previous[self.center.hashed]
