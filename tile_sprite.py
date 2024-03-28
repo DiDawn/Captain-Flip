@@ -6,11 +6,13 @@ class Tile(pygame.sprite.Sprite):
         self.size = size
         self.image = pygame.Surface(size)
         self.rect = self.image.get_rect()
+        self.dragging = False
 
         super().__init__()
 
         # init the variable that will track the face of the tile
         self.face = 1
+        self.flipped = False
 
         # load both faces of the tile
         self.face1 = pygame.image.load(images[0])
@@ -31,4 +33,6 @@ class Tile(pygame.sprite.Sprite):
         self.face = 1 if self.face == 2 else 2
 
     def update(self):
-        pass
+        if self.dragging:
+            pos = pygame.mouse.get_pos()
+            self.rect.topleft = (pos[0] - self.size[0] // 2, pos[1] - self.size[1] // 2)

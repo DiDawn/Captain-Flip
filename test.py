@@ -1,30 +1,33 @@
 import pygame as pygame
 from tile_sprite import Tile
+from board_pygame import Board
+import ctypes
 
 
+user32 = ctypes.windll.user32
+user32.SetProcessDPIAware()
 pygame.init()
-screen = pygame.display.set_mode((640, 480))
+screen = pygame.display.set_mode((1920, 1080))
 
 group = pygame.sprite.Group()
 
-tile = Tile((100, 100), ('assets/tiles/cabin_boy.jpg', 'assets/tiles/monkey.jpg'))
+board = Board((1080*2//3, 1080*2//3))
+tile = Tile((board.rect.w * 0.14, board.rect.h * 0.14),
+            ('assets/tiles/cabin_boy.png', 'assets/tiles/monkey.png'))
 tile.set_position((100, 100))
-group.add(tile)
+board.current_tile = tile
 
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if tile.rect.collidepoint(event.pos):
-                tile.flip()
+        else:
+            board.event_handler(event)
 
-    group.update()
-    screen.fill((0, 0, 0))
-    group.draw(screen)
+    board.update()
+    screen.blit(board, (0, 200))
     pygame.display.flip()
-
 
 if __name__ == '__main__':
     pygame.quit()
