@@ -103,7 +103,7 @@ class Board:
             return self.cabin_boy_on_board_counter
 
 # creating a function to calculate how many gunboat you have on a boat
-    def gunboat_counter(self):
+    def gunboat_countering(self):
         for column in self.column_list:
             for tile in column:
                 if tile.character.character_id == 4:

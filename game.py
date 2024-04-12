@@ -65,8 +65,14 @@ class Game:
             # the game decides whose turn it is
             current_player = self.players_list[turn % self.number_players]
             turn += 1
-            # generates a new tile
+            # generates a new tile with random characters
             tile = Tile()
             tile.random_characters(mapper, navigator, cooker, gunboat, monkey, parrot, cabin_boy, carpenter, guard)
             # activates character effect when he is placed
             tile.character.active_effect(current_player, Game, tile)
+
+            for player in self.players_list:
+                if self.treasure_map_possessor == player:
+                    player.gold += 1
+                else:
+                    pass
