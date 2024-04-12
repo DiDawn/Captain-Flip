@@ -19,14 +19,14 @@ B2C5 = Column(4, 5, 0, "add4/2gold")
 board1 = Board(1, B1C1, B1C2, B1C3, B1C4, B1C5)
 board2 = Board(2, B2C1, B2C2, B2C3, B2C4, B2C5)
 
-mapper = Character(1,"treasure_map", None)
-navigator = Character(2,None,None)
-cooker = Character(3,"cooker_act", None)
-gunboat = Character(4,"gunboat_act", "gunboat_end")
+mapper = Character(1, "treasure_map", None)
+navigator = Character(2, None, None)
+cooker = Character(3, "cooker_act", None)
+gunboat = Character(4, "gunboat_act", "gunboat_end")
 monkey = Character(5, None, None)
 parrot = Character(6, None, None)
-cabin_boy = Character(7,None, "cabin_boy_end")
-carpenter= Character(8, None, None)
+cabin_boy = Character(7, None, "cabin_boy_end")
+carpenter = Character(8, None, None)
 guard = Character(9, None, None)
 
 
@@ -58,22 +58,15 @@ class Game:
     def game_running(self):
         # randomizing player's order
         shuffle(self.players_list)
-        turn = 1
-        active_player = 0
+        turn = 0
+        current_player = 0
         # the game run until at least a player's board is full
-        while not end_of_thegame():
+        while not self.end_game:
             # the game decides whose turn it is
-            if turn % self.number_players == 1:
-                active_player = self.players_list[0]
-            elif turn % self.number_players == 2:
-                active_player = self.players_list[1]
-            elif turn % self.number_players == 3:
-                active_player = self.players_list[2]
-            elif turn % self.number_players == 4:
-                active_player = self.players_list[3]
-            elif turn % self.number_players == 5:
-                active_player = self.players_list[4]
+            current_player = self.players_list[turn % self.number_players]
             turn += 1
             # generates a new tile
             tile = Tile()
             tile.random_characters(mapper, navigator, cooker, gunboat, monkey, parrot, cabin_boy, carpenter, guard)
+            # activates character effect when he is placed
+            tile.character.active_effect(current_player, Game, tile)
