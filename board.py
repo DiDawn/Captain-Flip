@@ -1,21 +1,25 @@
 from column import Column
 
-B1C1 = Column(2, 1, 0, None)
-B1C2 = Column(3, 2, 0, "treasure_map")
-B1C3 = Column(5, 3, 0, "add5gold")
-B1C4 = Column(2, 4, 2, None)
-B1C5 = Column(3, 5, 0, "add3gold")
+B1C1 = Column(2, 0, 0, None)
+B1C2 = Column(3, 1, 0, "treasure_map")
+B1C3 = Column(5, 2, 0, "add5gold")
+B1C4 = Column(2, 3, 2, None)
+B1C5 = Column(3, 4, 0, "add3gold")
+BOARD1COLUMNS = [B1C1, B1C2, B1C3, B1C4, B1C5]
 
-B2C1 = Column(2, 1, 0, "add1/0gold")
-B2C2 = Column(3, 2, 0, "add2/1gold")
-B2C3 = Column(5, 3, 0, "add6/3gold")
-B2C4 = Column(1, 4, 0, "add0/2gold")
-B2C5 = Column(4, 5, 0, "add4/2gold")
+B2C1 = Column(2, 0, 0, "add1/0gold")
+B2C2 = Column(3, 1, 0, "add2/1gold")
+B2C3 = Column(5, 2, 0, "add6/3gold")
+B2C4 = Column(1, 3, 0, "add0/2gold")
+B2C5 = Column(4, 4, 0, "add4/2gold")
+BOARD2COLUMNS = [B2C1, B2C2, B2C3, B2C4, B2C5]
+
+BOARDS_COLUMNS = [BOARD1COLUMNS, BOARD2COLUMNS]
 
 
-class Board:
-    def __init__(self, number, column1, column2, column3, column4, column5):
-        self.column_list = [column1, column2, column3, column4, column5]
+class BoardManager:
+    def __init__(self, number):
+        self.column_list = BOARDS_COLUMNS[number]
         self.number = number
         self.full_column_counter = 0
         self.gunboat_counter = 0
@@ -36,46 +40,46 @@ class Board:
             if column.gap_from_the_bottom == 0:
                 # Append the first tile of the column to row 1
                 self.row1.append(column[0])
-                if column.lenght > 1:
+                if column.length > 1:
                     # If column length > 1, append the second tile of the column to row 2
                     self.row2.append(column[1])
-                    if column.lenght > 2:
+                    if column.length > 2:
                         # If column length > 2, append the third tile of the column to row 3
                         self.row3.append(column[2])
-                        if column.lenght > 3:
+                        if column.length > 3:
                             # If column length > 3, append the fourth tile of the column to row 4
                             self.row4.append(column[3])
-                            if column.lenght > 4:
+                            if column.length > 4:
                                 # If column length > 4, append the fifth tile of the column to row 5
                                 self.row5.append(column[4])
             if column.gap_from_the_bottom == 1:
                 # If the gap from the bottom is 1
                 self.row2.append(column[0])
                 # Append the first tile of the column to row 2
-                if column.lenght > 1:
+                if column.length > 1:
                     # If column length > 1, append the second tile of the column to row 3
                     self.row3.append(column[1])
-                    if column.lenght > 2:
+                    if column.length > 2:
                         # If column length > 2, append the third tile of the column to row 4
                         self.row4.append(column[2])
-                        if column.lenght > 3:
+                        if column.length > 3:
                             # If column length > 2, append the fourth tile of the column to row 5
                             self.row5.append(column[3])
             if column.gap_from_the_bottom == 2:
                 # If the gap from the bottom is 2
                 self.row3.append(column[0])
                 # Append the first tile of the column to row 3
-                if column.lenght > 1:
+                if column.length > 1:
                     # If column length > 1, append the second tile of the column to row 4
                     self.row4.append(column[1])
-                    if column.lenght > 2:
+                    if column.length > 2:
                         # If column length > 2, append the third tile of the column to row 5
                         self.row5.append(column[2])
             if column.gap_from_the_bottom == 3:
                 # If the gap from the bottom is 3
                 self.row4.append(column[0])
                 # Append the first tile of the column to row 4
-                if column.lenght > 1:
+                if column.length > 1:
                     # If column length > 1, append the second tile of the column to row 5
                     self.row5.append(column[1])
             if column.gap_from_the_bottom == 4:
@@ -87,7 +91,7 @@ class Board:
     def verifying_full(self):
         for column in self.column_list:
             # verifying if every column composing the board is full
-            if len(column) == column.lenght:
+            if len(column) == column.length:
                 self.full_column_counter += 1
             # if the board is full then it returns True to indicate the end of the game
             if self.full_column_counter == 5:

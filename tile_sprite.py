@@ -32,7 +32,8 @@ class Tile(pygame.sprite.Sprite):
         self.image = self.face2 if self.face == 1 else self.face1
         self.face = 1 if self.face == 2 else 2
 
-    def update(self):
+    def update(self, board_pos: tuple[int, int]):
         if self.dragging:
             pos = pygame.mouse.get_pos()
-            self.rect.topleft = (pos[0] - self.size[0] // 2, pos[1] - self.size[1] // 2)
+            x, y = pos[0] - board_pos[0], pos[1] - board_pos[1]
+            self.rect.topleft = (x - self.size[0] // 2, y - self.size[1] // 2)

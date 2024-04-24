@@ -1,5 +1,6 @@
 from player import Player
 
+
 # creating a new class for the different columns composing the different boards
 class Column:
 
@@ -90,3 +91,6 @@ class Column:
                 # we just need to know if there is at least a cabin boy
                 if self.cabin_boy_presence < 1:
                     self.cabin_boy_presence += 1
+
+    def __getitem__(self, item):
+        return self.column[item]
