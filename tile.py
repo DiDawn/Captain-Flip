@@ -7,6 +7,8 @@ class Tile:
         self.character = 0
         self.character_afk = 0
         self.tuple = [self.character, self.character_afk]
+        self.x = -1
+        self.y = -1
 
     # function to generate a tile with two different characters
     def random_characters(self, mapper, navigator, cooker, gunboat, monkey, parrot, cabin_boy, carpenter, guard):
