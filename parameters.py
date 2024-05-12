@@ -12,6 +12,8 @@ STATS_MENU = 7
 BOARD_A_GRID = [(1212, 1776), (2202, 1782), (2198, 2264), (1214, 2270), (718, 2268), (220, 2270), (716, 1776),
                 (220, 1776), (2200, 1286), (1710, 1298), (1216, 1290), (728, 1286), (1712, 794), (1216, 794),
                 (1216, 312)]
+BOARDS_GRID = [BOARD_A_GRID]
+
 # customs events for changing menus
 CHANGE_TO_FIRST = pygame.USEREVENT + 1
 CHANGE_TO_LOGIN = pygame.USEREVENT + 2

@@ -1,36 +1,11 @@
-import PySimpleGUI as sg
-
-
-def main_window():
-    layout = [[sg.Text('Main Window')],
-              [sg.Button('Open Another Window')]]
-
-    window = sg.Window('Main Window', layout)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED:
-            break
-        elif event == 'Open Another Window':
-            a_w = AnotherWindow()
-            print("b")
-
-    window.close()
-
-
-class AnotherWindow():
+class CustomList:
     def __init__(self):
-        layout = [[sg.Text('Another Window')],
-                  [sg.Button('Close')]]
+        self._data = []
 
-        window = sg.Window('Another Window', layout)
+    def __getitem__(self, index):
+        return self._data[index]
 
-        while True:
-            event, values = window.read()
-            if event == sg.WINDOW_CLOSED or event == 'Close':
-                break
+    def __iadd__(self, other):
+        self._data.append(other)
+        return self
 
-        window.close()
-
-
-main_window()

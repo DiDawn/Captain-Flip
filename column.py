@@ -10,7 +10,6 @@ class Column:
         self.place_in_the_board = place_in_the_board
         self.gap_from_the_bottom = gap_from_the_bottom
         self.bonus = bonus
-        self.cabin_boy_presence = 0
 
     # Creating a function to add a new tile to the column
     def add_tile(self, tile, player, game):
@@ -85,12 +84,19 @@ class Column:
             pass
 
 # verifying if there is a cabin boy in the column
-    def cabin_boy_counter(self):
+    def cabin_boy_aboard(self):
+        cabin_boy_presence = 0
         for tile in self.column:
             if tile.character.character_id == 7:
-                # we just need to know if there is at least a cabin boy
-                if self.cabin_boy_presence < 1:
-                    self.cabin_boy_presence += 1
+                cabin_boy_presence += 1
+        return cabin_boy_presence
+
+    def is_full(self):
+        return len(self.column) == self.length
 
     def __getitem__(self, item):
         return self.column[item]
+
+    def __iadd__(self, other):
+        self.column.append(other)
+        return self

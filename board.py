@@ -18,99 +18,50 @@ BOARDS_COLUMNS = [BOARD1COLUMNS, BOARD2COLUMNS]
 
 
 class BoardManager:
-    def __init__(self, number):
-        self.column_list = BOARDS_COLUMNS[number]
-        self.number = number
-        self.full_column_counter = 0
-        self.gunboat_counter = 0
-        self.cabin_boy_on_board_counter = 0
-        self.row1 = []
-        self.row2 = []
-        self.row3 = []
-        self.row4 = []
-        self.row5 = []
-        self.row_list = []
+    def __init__(self, board_number):
+        self.columns = BOARDS_COLUMNS[board_number]
+        self.highest_column = 5 if board_number != 4 else 4
+        self.rows = [[None] * 5 for _ in range(self.highest_column)]
 
-# creating a function to generate rows on the board
-    def generates_rows(self):
-        # Loop through each column in the columns list
-        for column in self.column_list:
-            # Check the gap from the bottom for each column and append data to the corresponding row
-            # If the gap from the bottom is 0
-            if column.gap_from_the_bottom == 0:
-                # Append the first tile of the column to row 1
-                self.row1.append(column[0])
-                if column.length > 1:
-                    # If column length > 1, append the second tile of the column to row 2
-                    self.row2.append(column[1])
-                    if column.length > 2:
-                        # If column length > 2, append the third tile of the column to row 3
-                        self.row3.append(column[2])
-                        if column.length > 3:
-                            # If column length > 3, append the fourth tile of the column to row 4
-                            self.row4.append(column[3])
-                            if column.length > 4:
-                                # If column length > 4, append the fifth tile of the column to row 5
-                                self.row5.append(column[4])
-            if column.gap_from_the_bottom == 1:
-                # If the gap from the bottom is 1
-                self.row2.append(column[0])
-                # Append the first tile of the column to row 2
-                if column.length > 1:
-                    # If column length > 1, append the second tile of the column to row 3
-                    self.row3.append(column[1])
-                    if column.length > 2:
-                        # If column length > 2, append the third tile of the column to row 4
-                        self.row4.append(column[2])
-                        if column.length > 3:
-                            # If column length > 2, append the fourth tile of the column to row 5
-                            self.row5.append(column[3])
-            if column.gap_from_the_bottom == 2:
-                # If the gap from the bottom is 2
-                self.row3.append(column[0])
-                # Append the first tile of the column to row 3
-                if column.length > 1:
-                    # If column length > 1, append the second tile of the column to row 4
-                    self.row4.append(column[1])
-                    if column.length > 2:
-                        # If column length > 2, append the third tile of the column to row 5
-                        self.row5.append(column[2])
-            if column.gap_from_the_bottom == 3:
-                # If the gap from the bottom is 3
-                self.row4.append(column[0])
-                # Append the first tile of the column to row 4
-                if column.length > 1:
-                    # If column length > 1, append the second tile of the column to row 5
-                    self.row5.append(column[1])
-            if column.gap_from_the_bottom == 4:
-                # If the gap from the bottom is 3
-                self.row5.append(column[0])
-                # Append the first tile of the column to row 5
+    def insert_tile(self, column_number, tile):
+        column = self.columns[column_number]
+        if column.is_full():
+            return False
+        column.column.append(tile)
+        self.rows[len(self.rows) - len(column.column) - column.gap_from_the_bottom][column_number] = tile
+        print("-----------------------")
+        print("\n".join(str(row) for row in self.rows))
+        print("-----------------------")
+        return True
 
-    # function to verify if the board is full
-    def verifying_full(self):
-        for column in self.column_list:
-            # verifying if every column composing the board is full
-            if len(column) == column.length:
-                self.full_column_counter += 1
-            # if the board is full then it returns True to indicate the end of the game
-            if self.full_column_counter == 5:
-                return True
-            # if the board is not full then it returns False, the game continues
+    # return the height of the first empty tile in the columns
+    def get_empty_tiles(self):
+        empty_tiles = []
+        for column in self.columns:
+            length = len(column.column)
+            if length < column.length:
+                empty_tiles.append(length)
             else:
-                return False
+                empty_tiles.append(None)
+        return empty_tiles
 
-# creating a function to calculate how many column have at least a mousse
-    def counting_columns_with_a_cabin_boy_on_board(self):
-        for column in self.column_list:
-            self.cabin_boy_on_board_counter += column.cabin_boy_presence
-            return self.cabin_boy_on_board_counter
+    def cabin_boy_aboard(self):
+        cabin_boy_counter = 0
+        for column in self.columns:
+            cabin_boy_counter += column.cabin_boy_aboard()
+        return cabin_boy_counter
 
-# creating a function to calculate how many gunboat you have on a boat
-    def gunboat_countering(self):
-        for column in self.column_list:
+    def gunboat_aboard(self):
+        gunboat_counter = 0
+        for column in self.columns:
             for tile in column:
                 if tile.character.character_id == 4:
-                    self.gunboat_counter += 1
-        return self.gunboat_counter
+                    gunboat_counter += 1
+        return gunboat_counter
 
+    # check if at least 3 columns are filled
+    def check_end(self):
+        filled_columns = 0
+        for column in self.columns:
+            if column.is_full():
+                filled_columns += 1

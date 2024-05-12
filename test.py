@@ -11,7 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode((1920, 1080))
 
 group = pygame.sprite.Group()
-board = Board((1080*2//3, 1080*2//3), BOARD_A_GRID)
+board = Board((1080*2//3, 1080*2//3), 0)
 tile = Tile((board.rect.w * 0.14, board.rect.h * 0.14),
             ('assets/tiles/cabin_boy.png', 'assets/tiles/monkey.png'))
 tile.set_position((100, 100))
@@ -29,6 +29,9 @@ while running:
     board.update()
     screen.blit(board, board.rect.topleft)
     pygame.display.flip()
+    if board.current_tile is None:
+        board.current_tile = Tile((board.rect.w * 0.14, board.rect.h * 0.14),
+            ('assets/tiles/cabin_boy.png', 'assets/tiles/monkey.png'))
 
 if __name__ == '__main__':
     pygame.quit()

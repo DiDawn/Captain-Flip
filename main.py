@@ -22,9 +22,9 @@ pygame.display.set_caption('Captain FLip')
 pygame.display.flip()
 
 # init player
-player = Player()
+player = Player(1)
 
-# init menus
+# init menu
 first_menu = FirstMenu(screensize)
 login_menu = LoginMenu(screensize, "login", player=player)
 register_menu = LoginMenu(screensize, "register")
@@ -63,7 +63,7 @@ fps_a = []
 # game loop
 while running:
     # tick the clock
-    clock.tick(60)
+    #clock.tick(60)
     # for loop through the event queue
     for event in pygame.event.get():
 
