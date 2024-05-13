@@ -1,6 +1,5 @@
 from tile import Tile
 
-
 class Character:
     def __init__(self, character_id, active_effect, end_effect):
         self.character_id = character_id
@@ -16,11 +15,11 @@ class Character:
         if self.active_effect == "cooker_act":
             # Adding to the player an amount of gold equal to the number of characters there are already in the row
             # where the cooker is placed in by counting him (+1)
-            player.gold += len(player.board.row_list[tile.y-1]) + 1
+            player.gold += len(player.board.rows[tile.y-1]) + 1
         if self.active_effect == "navigator_act":
             counter = 0
             # counting the number of mapper on the current player's board
-            for column in player.board.column_list:
+            for column in player.board.columns:
                 for tile in column:
                     if tile.character == mapper:
                         counter += 1
@@ -28,20 +27,25 @@ class Character:
             player.gold += 2*counter
         if self.active_effect == "monkey_act":
             player.gold += 1
+            if tile.y == 0:
+                if game.board.columns[tile.x-1].place_in_the_board[] is None:
 
-            if tile.x == 0:
-
-            # flip the tile above the monkey
-            player.board.column_list[tile.x][tile.y + 1].flip()
-            # flip the tile under the monkey
-            player.board.column_list[tile.x][tile.y - 1].flip()
-            # flip the tile at the right of the monkey
-            player.board.row_list[tile.y][tile.x + 1].flip()
-            # flip the tile at the left of the monkey
-            player.board.row_list[tile.y][tile.x - 1].flip()
-
-
-
+                # flip the tile above the monkey
+                player.board.columns[tile.x][tile.y + 1].flip()
+                # flip the tile at the right of the monkey
+                player.board.rows[tile.y][tile.x + 1].flip()
+                # flip the tile at the left of the monkey
+                player.board.rows[tile.y][tile.x - 1].flip()
+                
+            if tile.x:
+                # flip the tile above the monkey
+                player.board.columns[tile.x][tile.y + 1].flip()
+                # flip the tile under the monkey
+                player.board.columns[tile.x][tile.y - 1].flip()
+                # flip the tile at the right of the monkey
+                player.board.rows[tile.y][tile.x + 1].flip()
+                # flip the tile at the left of the monkey
+                player.board.rows[tile.y][tile.x - 1].flip()
 
     def end_effect(self, player, game, board):
         if self.end_effect == "gunboat_end":
@@ -59,7 +63,6 @@ class Character:
                 player.gold += 4
             if board.cabin_boy_on_board_counter == 1:
                 player.gold += 1
-
 
 mapper = Character(1,"treasure_map", None) # Done
 navigator = Character(2,"navigator_act",None) # Done
