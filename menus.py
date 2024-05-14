@@ -505,6 +505,7 @@ class ChooseBoardMenu(MenuBackground):
 
     def start_game(self):
         print(f"starting game with board{self.carousel.current_board}")
+        pygame.event.post(pygame.event.Event(START_GAME, board_number=self.carousel.current_board))
 
     def start_swipe_loop(self):
         thread = Thread(target=self.update_swipe_loop)

@@ -9,9 +9,12 @@ class Board(pygame.surface.Surface):
         self.board_manager = BoardManager(board_number)
 
         self.size = size
-        self.background_image = Image(f'assets/boards/board_{board_number + 1}.png')
-        self.scale_factor = size[0] / self.background_image.rect.w
-        self.background_image = self.background_image.resize(scale_factor=self.scale_factor)
+        self.maximised_background_image = Image(f'assets/boards/board_{board_number + 1}.png')
+        self.scale_factor = size[0] / self.maximised_background_image.rect.w
+
+        self.maximised_background_image = self.maximised_background_image.resize(scale_factor=self.scale_factor)
+        self.minimised_background_image = self.maximised_background_image.resize(scale_factor=0.5)
+        self.background_image = self.maximised_background_image
 
         # init the surface
         super().__init__(self.size)
@@ -23,6 +26,7 @@ class Board(pygame.surface.Surface):
 
         self.current_tile = None
         self.current_tile_last_pos = (0, 0)
+        self.minimised = False
 
         self.grid = []
         self.columns_positions = []
@@ -73,6 +77,7 @@ class Board(pygame.surface.Surface):
 
                         empty_tiles = self.board_manager.get_empty_tiles()
                         if not all(c is None for c in empty_tiles):
+                            print("here", empty_tiles, column_number, self.columns_positions)
                             if rect.topleft == self.columns_rects[column_number][self.board_manager.get_empty_tiles()[column_number]].topleft:
                                 self.current_tile.rect.topleft = rect.topleft
                                 # update the board manager
@@ -91,10 +96,20 @@ class Board(pygame.surface.Surface):
 
     def update(self):
         self.blit(self.background_image, (0, 0))
-        self.tiles_sprites.update(self.rect.topleft)
+        self.tiles_sprites.update(self.rect.topleft, self.minimised)
         self.tiles_sprites.draw(self)
         if self.current_tile is not None:
             self.blit(self.current_tile.image, self.current_tile.rect.topleft)
+
+    def minimise(self):
+        # minimize the board and the tiles
+        self.background_image = self.minimised_background_image
+        self.minimised = True
+
+    def maximise(self):
+        # maximize the board and the tiles
+        self.background_image = self.maximised_background_image
+        self.minimised = False
 
     def relative_mouse_pos(self, pos):
         return pos[0] - self.rect.x, pos[1] - self.rect.y

@@ -7,6 +7,7 @@ class Tile(pygame.sprite.Sprite):
         self.image = pygame.Surface(size)
         self.rect = self.image.get_rect()
         self.dragging = False
+        self.minimised = False
 
         super().__init__()
 
@@ -21,6 +22,8 @@ class Tile(pygame.sprite.Sprite):
         # resize the faces
         self.face1 = pygame.transform.scale(self.face1, size)
         self.face2 = pygame.transform.scale(self.face2, size)
+        self.minimised_face1 = pygame.transform.scale(self.face1, (size[0] // 2, size[1] // 2))
+        self.minimised_face2 = pygame.transform.scale(self.face2, (size[0] // 2, size[1] // 2))
 
         # set the face of the tile
         self.image = self.face1
@@ -29,11 +32,25 @@ class Tile(pygame.sprite.Sprite):
         self.rect.topleft = position
 
     def flip(self):
-        self.image = self.face2 if self.face == 1 else self.face1
-        self.face = 1 if self.face == 2 else 2
+        if not self.flipped:
+            self.image = self.face2 if self.face == 1 else self.face1
+            self.face = 1 if self.face == 2 else 2
+            self.flipped = True
 
-    def update(self, board_pos: tuple[int, int]):
+    def update(self, board_pos: tuple[int, int], minimised: bool = False):
         if self.dragging:
             pos = pygame.mouse.get_pos()
             x, y = pos[0] - board_pos[0], pos[1] - board_pos[1]
             self.rect.topleft = (x - self.size[0] // 2, y - self.size[1] // 2)
+        if minimised and not self.minimised:
+            x, y = self.rect.topleft
+            self.rect.topleft = (x // 2, y // 2)
+            self.rect.size = (self.size[0] // 2, self.size[1] // 2)
+            self.image = self.minimised_face2 if self.face == 2 else self.minimised_face1
+            self.minimised = True
+        elif not minimised and self.minimised:
+            x, y = self.rect.topleft
+            self.rect.topleft = (x * 2, y * 2)
+            self.rect.size = self.size
+            self.image = self.face2 if self.face == 2 else self.face1
+            self.minimised = False

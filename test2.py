@@ -1,11 +1,3 @@
-class CustomList:
-    def __init__(self):
-        self._data = []
 
-    def __getitem__(self, index):
-        return self._data[index]
-
-    def __iadd__(self, other):
-        self._data.append(other)
-        return self
-
+pairs = ((i, j) for i in range(9) for j in range(9) if i != j)
+tile = pairs.pop(randint(len(pairs) - 1))

@@ -3,6 +3,7 @@ from menus import LoginMenu, HomeMenu, FirstMenu, GameModeMenu, ChooseBoardMenu,
 from time import time
 from parameters import *
 from player import Player
+from game import Game
 
 # init pygame module
 pygame.init()
@@ -22,7 +23,7 @@ pygame.display.set_caption('Captain FLip')
 pygame.display.flip()
 
 # init player
-player = Player(1)
+player = Player()
 
 # init menu
 first_menu = FirstMenu(screensize)
@@ -33,6 +34,8 @@ game_mode_menu = GameModeMenu(screensize)
 choose_board_menu = ChooseBoardMenu(screensize)
 rules_menu = RulesMenu(screensize)
 stats_menu = StatsMenu(screensize)
+
+game = None
 
 # load and start music
 pygame.mixer.music.load('assets/music/sot_bo.ogg')
@@ -63,7 +66,7 @@ fps_a = []
 # game loop
 while running:
     # tick the clock
-    #clock.tick(60)
+    clock.tick(60)
     # for loop through the event queue
     for event in pygame.event.get():
 
@@ -102,7 +105,9 @@ while running:
         elif event.type == RESET_PLAYER:
             player = Player()
             stats_menu.update_stats(player.stats)
-
+        elif event.type == START_GAME:
+            game = Game(screen, screensize, event.board_number, [player])
+            current_menu = game
         else:
             current_menu.event_handler(event)
 
