@@ -27,25 +27,21 @@ class Character:
             player.gold += 2*counter
         if self.active_effect == "monkey_act":
             player.gold += 1
-            if tile.y == 0:
-                if game.board.columns[tile.x-1].place_in_the_board[] is None:
+            flippable_tiles = []
+            if tile.y > 0:
+                flippable_tiles.append((tile.x, tile.y-1))
+                if game.board.columns[tile.x-1][tile.x-1] is not None:
+                    flippable_tiles.append((tile.x-1, tile.y))
+                if game.board.columns[tile.x+1][tile.x+1] is not None:
+                    flippable_tiles.append((tile.x+1, tile.y))
+            elif tile.y == 0:
+                if game.board.columns[tile.x-1][tile.x-1] is not None:
+                    flippable_tiles.append((tile.x-1, tile.y))
+                if game.board.columns[tile.x+1][tile.x+1] is not None:
+                    flippable_tiles.append((tile.x+1, tile.y))
+            return flippable_tiles
+        if self.active_effect == "parrot_act":
 
-                # flip the tile above the monkey
-                player.board.columns[tile.x][tile.y + 1].flip()
-                # flip the tile at the right of the monkey
-                player.board.rows[tile.y][tile.x + 1].flip()
-                # flip the tile at the left of the monkey
-                player.board.rows[tile.y][tile.x - 1].flip()
-                
-            if tile.x:
-                # flip the tile above the monkey
-                player.board.columns[tile.x][tile.y + 1].flip()
-                # flip the tile under the monkey
-                player.board.columns[tile.x][tile.y - 1].flip()
-                # flip the tile at the right of the monkey
-                player.board.rows[tile.y][tile.x + 1].flip()
-                # flip the tile at the left of the monkey
-                player.board.rows[tile.y][tile.x - 1].flip()
 
     def end_effect(self, player, game, board):
         if self.end_effect == "gunboat_end":
@@ -69,7 +65,7 @@ navigator = Character(2,"navigator_act",None) # Done
 cooker = Character(3,"cooker_act", None) # Done
 gunboat = Character(4,"gunboat_act", "gunboat_end") # Done
 monkey = Character(5, "monkey_act", None)
-parrot = Character(6, None, None)
+parrot = Character(6, "parrot_act", "parrot_end")
 cabin_boy = Character(7,None, "cabin_boy_end") # Done
 carpenter= Character(8, None, None)
 guard = Character(9, None, None)
