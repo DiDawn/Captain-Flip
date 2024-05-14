@@ -1,7 +1,16 @@
 from character import Character
 import random
+mapper = Character(1,"treasure_map", None) # Done
+navigator = Character(2,"navigator_act",None) # Done
+cooker = Character(3,"cooker_act", None) # Done
+gunboat = Character(4,"gunboat_act", "gunboat_end") # Done
+monkey = Character(5, "monkey_act", None)
+parrot = Character(6, "parrot_act", "parrot_end")
+cabin_boy = Character(7,None, "cabin_boy_end") # Done
+carpenter= Character(8, None, None)
+guard = Character(9, None, None)
 
-
+characters_list = [mapper, navigator, cooker, gunboat, monkey, parrot, cabin_boy, carpenter, guard]
 class Tile:
     def __init__(self):
         self.character = 0
@@ -9,53 +18,12 @@ class Tile:
         self.tuple = [self.character, self.character_afk]
         self.x = -1
         self.y = -1
+        self.pairs = ((i,j) for i in range(9) for j in range(9) if i !=j)
 
     # function to generate a tile with two different characters
-    def random_characters(self, mapper, navigator, cooker, gunboat, monkey, parrot, cabin_boy, carpenter, guard):
-        self.character = random.randint(1, 9)
-        self.character_afk = random.randint(1, 9)
-        # making sure that the two characters are different
-        if self.character == self.character_afk:
-            while self.character == self.character_afk:
-                self.character_afk = random.randint(1, 9)
-        # associating an active character according to the number we drew
-        if self.character == 1:
-            self.character = mapper
-        elif self.character == 2:
-            self.character = navigator
-        elif self.character == 3:
-            self.character = cooker
-        elif self.character == 4:
-            self.character = gunboat
-        elif self.character == 5:
-            self.character = monkey
-        elif self.character == 6:
-            self.character = parrot
-        elif self.character == 7:
-            self.character = cabin_boy
-        elif self.character == 8:
-            self.character = carpenter
-        elif self.character == 9:
-            self.character = guard
-        # associating an afk character according to the number we drew
-        if self.character_afk == 1:
-            self.character_afk = mapper
-        elif self.character_afk == 2:
-            self.character_afk = navigator
-        elif self.character_afk == 3:
-            self.character_afk = cooker
-        elif self.character_afk == 4:
-            self.character_afk = gunboat
-        elif self.character_afk == 5:
-            self.character_afk = monkey
-        elif self.character_afk == 6:
-            self.character_afk = parrot
-        elif self.character_afk == 7:
-            self.character_afk = cabin_boy
-        elif self.character_afk == 8:
-            self.character_afk = carpenter
-        elif self.character_afk == 9:
-            self.character_afk = guard
+    def tile_characters(self, characters_list):
+
+
 
 # function to flip the cards
     def flip(self):

@@ -1,5 +1,5 @@
 from column import Column
-from board import Board
+from board import BoardManager
 from tile import Tile
 from character import Character
 from random import shuffle
