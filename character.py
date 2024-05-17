@@ -1,11 +1,11 @@
 from tile import Tile
 
-
 class Character:
     def __init__(self, character_id, active_effect, end_effect):
         self.character_id = character_id
         self.active_effect = active_effect
         self.end_effect = end_effect
+        self.counter == 16
 
     def active_effect(self, player, game, tile):
         if self.active_effect == "treasure_map":
@@ -16,11 +16,11 @@ class Character:
         if self.active_effect == "cooker_act":
             # Adding to the player an amount of gold equal to the number of characters there are already in the row
             # where the cooker is placed in by counting him (+1)
-            player.gold += len(player.board.row_list[tile.y-1]) + 1
+            player.gold += len(player.board.rows[tile.y-1]) + 1
         if self.active_effect == "navigator_act":
             counter = 0
             # counting the number of mapper on the current player's board
-            for column in player.board.column_list:
+            for column in player.board.columns:
                 for tile in column:
                     if tile.character == mapper:
                         counter += 1
@@ -28,19 +28,20 @@ class Character:
             player.gold += 2*counter
         if self.active_effect == "monkey_act":
             player.gold += 1
-
-            if tile.x == 0:
-
-            # flip the tile above the monkey
-            player.board.column_list[tile.x][tile.y + 1].flip()
-            # flip the tile under the monkey
-            player.board.column_list[tile.x][tile.y - 1].flip()
-            # flip the tile at the right of the monkey
-            player.board.row_list[tile.y][tile.x + 1].flip()
-            # flip the tile at the left of the monkey
-            player.board.row_list[tile.y][tile.x - 1].flip()
-
-
+            flippable_tiles = []
+            if tile.y > 0:
+                flippable_tiles.append((tile.x, tile.y-1))
+                if game.board.columns[tile.x-1][tile.x-1] is not None:
+                    flippable_tiles.append((tile.x-1, tile.y))
+                if game.board.columns[tile.x+1][tile.x+1] is not None:
+                    flippable_tiles.append((tile.x+1, tile.y))
+            elif tile.y == 0:
+                if game.board.columns[tile.x-1][tile.x-1] is not None:
+                    flippable_tiles.append((tile.x-1, tile.y))
+                if game.board.columns[tile.x+1][tile.x+1] is not None:
+                    flippable_tiles.append((tile.x+1, tile.y))
+            return flippable_tiles
+        if self.active_effect == "parrot_act":
 
 
     def end_effect(self, player, game, board):
@@ -60,13 +61,12 @@ class Character:
             if board.cabin_boy_on_board_counter == 1:
                 player.gold += 1
 
-
 mapper = Character(1,"treasure_map", None) # Done
 navigator = Character(2,"navigator_act",None) # Done
 cooker = Character(3,"cooker_act", None) # Done
 gunboat = Character(4,"gunboat_act", "gunboat_end") # Done
 monkey = Character(5, "monkey_act", None)
-parrot = Character(6, None, None)
+parrot = Character(6, "parrot_act", "parrot_end")
 cabin_boy = Character(7,None, "cabin_boy_end") # Done
 carpenter= Character(8, None, None)
 guard = Character(9, None, None)
