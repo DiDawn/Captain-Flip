@@ -46,63 +46,6 @@ class Column:
                         return False
             return True
 
-    # Creating a function to apply a bonus when a column is full (if there is a bonus)
-    def apply_bonus(self, player, game):
-        if self.effect == "add3gold":
-            player.gold += 3
-        elif self.effect == "add5gold":
-            player.gold += 5
-        elif self.effect == "treasure_map":
-            # letting the game know who is the possessor of the map
-            game.treasure_map_possessor = player
-        elif self.effect == "add1/0gold":
-            # the first person to finish that column win 1 gold
-            if game.add10_counter == 0:
-                player.gold += 1
-            # The other players wins 0 gold if they finish that column
-            else:
-                pass
-            # letting the game know that the column has been filled by a player at least once
-            game.add10_counter += 1
-        elif self.effect == "add2/1gold":
-            # the first person to finish that column win 2 gold
-            if game.add21_counter == 0:
-                player.gold += 2
-            # The other players wins 1 gold if they finish that column
-            else:
-                player.gold += 1
-            # letting the game know that the column has been filled by a player at least once
-            game.add21_counter += 1
-        elif self.effect == "add6/3gold":
-            # the first person to finish that column win 6 gold
-            if game.add63_counter == 0:
-                player.gold += 6
-            # The other players wins 3 gold if they finish that column
-            else:
-                player.gold += 3
-            # letting the game know that the column has been filled by a player at least once
-            game.add63_counter += 1
-        elif self.effect == "add0/2gold":
-            # the first person to finish that column win 0 gold
-            if game.add02_counter == 0:
-                pass
-            # The other players wins 2 gold if they finish that column
-            else:
-                player.gold += 2
-            # letting the game know that the column has been filled by a player at least once
-            game.add02_counter += 1
-        elif self.effect == "add4/2gold":
-            # the first person to finish that column win 4 gold
-            if game.add42_counter == 0:
-                player.gold += 4
-            # The other players wins 2 gold if they finish that column
-            else:
-                player.gold += 2
-            # letting the game know that the column has been filled by a player at least once
-            game.add42_counter += 1
-        else:
-            pass
-
 # verifying if there is a cabin boy in the column
     def cabin_boy_aboard(self):
         cabin_boy_presence = 0
