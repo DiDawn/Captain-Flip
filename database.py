@@ -49,11 +49,11 @@ class Database:
         return self.victories, self.draws, self.defeats
 
     # function to add a win to the stats of a player and update it in the csv file
-    def add_victory(self, identifier):
-        self.victories += 1
+    @staticmethod
+    def add_victory(file,  identifier):
 
         # Open the CSV file for reading and writing
-        with open(self.file, 'r+', newline='') as csvfile:
+        with open(file, 'r+', newline='') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)  # Convert the rows to a list to modify them
 
@@ -74,11 +74,11 @@ class Database:
                     return
 
     # function to add a draw to the stats of a player and update it in the csv file
-    def add_draw(self, identifier):
-        self.draws += 1
+    @staticmethod
+    def add_draw(file, identifier):
 
         # Open the CSV file for reading and writing
-        with open(self.file, 'r+', newline='') as csvfile:
+        with open(file, 'r+', newline='') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)  # Convert the rows to a list to modify them
 
@@ -98,10 +98,11 @@ class Database:
                     return
 
     # function to add a defeat to the stats of a player and update it in the csv file
-    def add_defeat(self, identifier):
-        self.defeats += 1
+    @staticmethod
+    def add_defeat(file, identifier):
+
         # Open the CSV file for reading and writing
-        with open(self.file, 'r+', newline='') as csvfile:
+        with open(file, 'r+', newline='') as csvfile:
             reader = csv.reader(csvfile)
             rows = list(reader)  # Convert the rows to a list to modify them
 

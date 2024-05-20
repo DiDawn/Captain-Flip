@@ -1,6 +1,6 @@
 from column import Column
 from board import Board
-from tile import Tile
+from deck import Tile
 from character import Character
 from random import shuffle
 

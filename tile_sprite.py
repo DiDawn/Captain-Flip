@@ -2,12 +2,15 @@ import pygame
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, size: tuple[int, int], images: tuple[str, str]):
+    def __init__(self, size: tuple[int, int], images: tuple[str, str], tile_manager, pos: tuple[int, int] = (0, 0)):
         self.size = size
         self.image = pygame.Surface(size)
         self.rect = self.image.get_rect()
         self.dragging = False
         self.minimised = False
+        self.tile_manager = tile_manager
+        self.pos = pos
+        self.x, self.y = pos
 
         super().__init__()
 
@@ -31,11 +34,22 @@ class Tile(pygame.sprite.Sprite):
     def set_position(self, position: tuple[int, int]):
         self.rect.topleft = position
 
+    def set_pos_in_grid(self, pos: tuple[int, int]):
+        self.x, self.y = pos
+        self.pos = pos
+
     def flip(self):
         if not self.flipped:
             self.image = self.face2 if self.face == 1 else self.face1
             self.face = 1 if self.face == 2 else 2
             self.flipped = True
+            self.tile_manager.flip()
+
+    def monkey_flip(self):
+        self.image = self.face2 if self.face == 1 else self.face1
+        self.face = 1 if self.face == 2 else 2
+        self.flipped = True
+        self.tile_manager.flip()
 
     def update(self, board_pos: tuple[int, int], minimised: bool = False):
         if self.dragging:

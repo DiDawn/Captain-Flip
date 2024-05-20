@@ -6,6 +6,7 @@ from database import Database
 from parameters import *
 from threading import Thread
 from sound_effects import SoundEffects
+from player import Player
 
 
 class MenuBackground(pygame.Surface):
@@ -326,6 +327,7 @@ class LoginMenu(MenuBackground):
             self.input_box_password.wrong_input = False
             self.input_box_username.wrong_input = False
             self.player.stats = (self.db.victories, self.db.defeats, self.db.draws)
+            self.player.username = username
             pygame.event.post(pygame.event.Event(UPDATE_STATS))
             pygame.event.post(pygame.event.Event(CHANGE_TO_HOME))
         else:
@@ -410,10 +412,12 @@ class GameModeMenu(MenuBackground):
 
         # load images for buttons (gamemode, stats, quit)
         self.single_player_button = Button("assets/buttons/single_player.png",
-                                           call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
+                                           call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD,
+                                                                                             gamemode="single_player")),
                                            convert_alpha=True)
         self.multiplayer_button = Button("assets/buttons/multiplayer.png",
-                                         call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD)),
+                                         call=lambda: pygame.event.post(pygame.event.Event(
+                                             CHANGE_TO_CHOOSE_NUMBER_OF_PLAYERS)),
                                          convert_alpha=True)
         self.rules_button = Button("assets/buttons/rules.png",
                                    call=lambda: pygame.event.post(pygame.event.Event(CHANGE_TO_RULES)),
@@ -718,7 +722,7 @@ class StatsMenu(MenuBackground):
         self.blit(self.wins_number, self.wins_number.rect.topleft)
         self.blit(self.losses_number, self.losses_number.rect.topleft)
         self.blit(self.draws_number, self.draws_number.rect.topleft)
-        
+
         self.update_stats((2, 4, 18))
 
     def update_stats(self, new_stats: tuple[int, int, int]):
@@ -737,7 +741,7 @@ class StatsMenu(MenuBackground):
         self.wins_number.set_position(number_pos)
         self.losses_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 5.5))
         self.draws_number.set_position((number_pos[0], number_pos[1] + self.parchment_image.rect.h // 2.75))
-        
+
         # blit number images
         self.blit_background()
         self.blit(self.wins_image, self.wins_image.rect.topleft)
@@ -746,6 +750,162 @@ class StatsMenu(MenuBackground):
         self.blit(self.wins_number, self.wins_number.rect.topleft)
         self.blit(self.losses_number, self.losses_number.rect.topleft)
         self.blit(self.draws_number, self.draws_number.rect.topleft)
-        
+
+    def event_handler(self, event):
+        self.button_event_handler(event)
+
+
+class ChooseNumberOfPlayersMenu(MenuBackground):
+    def __init__(self, size):
+        super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE)
+
+        # rotate parchment
+        self.parchment_image = self.parchment_image.rotate(90)
+        self.parchment_image.rect.topleft = (size[0] // 2 - self.parchment_image.rect.w // 2,
+                                                size[1] * 0.6 - self.parchment_image.rect.h // 2)
+        self.blit_background()
+
+        self.numbers = []
+        # init the numbers
+        for i in range(2, 6):
+            self.numbers.append(Number(i))
+
+        # resize numbers
+        scale_factor = (size[0] // 10) / 150
+        for i, number in enumerate(self.numbers):
+            self.numbers[i] = number.resize(scale_factor)
+        print(self.numbers)
+
+        # set positions of the numbers
+        number_pos = (self.parchment_image.rect.x * 1.2, size[1] * 0.6 - self.numbers[0].rect.h // 2)
+        for number in self.numbers:
+            number.set_position(number_pos)
+            number_pos = (number_pos[0] + number.rect.w * 2, number_pos[1])
+
+        # blit the numbers
+        for number in self.numbers:
+            self.blit(number, number.rect.topleft)
+
+    def event_handler(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+            for number in self.numbers:
+                if number.rect.collidepoint(pos):
+                    pygame.event.post(pygame.event.Event(CHANGE_TO_LOGIN_GUESTS, number=number.number - 1))
+                    break
+
+        self.button_event_handler(event)
+
+
+class LoginGuestsMenu(MenuBackground):
+
+    def __init__(self, size, n):
+        super().__init__(size, pre_menu_event=CHANGE_TO_CHOOSE_NUMBER_OF_PLAYERS)
+
+        self.n = n
+        self.guests = []
+
+        # rotate parchment
+        self.parchment_image = self.parchment_image.rotate(90)
+
+        # resize parchment
+        scale_factor = size[0] // 2.5 / self.parchment_image.rect.w
+        self.parchment_image = self.parchment_image.resize(scale_factor)
+
+        # change parchment position
+        parchment_pos = (
+            size[0] // 2 - self.parchment_image.rect.w // 2, size[1] // 2 - self.parchment_image.rect.h // 3)
+        self.parchment_image.set_position(parchment_pos)
+
+        # refresh background to cover old parchment and blit it above
+        self.blit_background()
+
+        # initialize boxes
+        boxes_w, boxes_h = self.parchment_image.rect.w // 1.75, 50
+        box_pos = (self.parchment_image.rect.x + self.parchment_image.rect.w // 2 - boxes_w // 2,
+                   self.parchment_image.rect.y + self.parchment_image.rect.h // 2.4 - boxes_h // 2)
+        self.input_box_username = InputBox(box_pos[0], box_pos[1], boxes_w, boxes_h, under_text="Guest 1 Username")
+
+        # place login button
+        self.login_button = Button("assets/buttons/login.png", call=lambda: self.login(),
+                                   convert_alpha=True)
+        self.login_button_hover = Image("assets/buttons/login_hover.png", convert_alpha=True)
+        scale_factor = (self.parchment_image.rect.w // 7.5) / 130
+        self.login_button = self.login_button.resize(scale_factor)
+        self.login_button_hover = self.login_button_hover.resize(scale_factor)
+        self.hover_dict[self.login_button.hashed] = self.login_button_hover
+        login_button_pos = (
+            self.parchment_image.rect.w // 2 - self.login_button.rect.w // 2 + self.parchment_image.rect.x,
+            self.parchment_image.rect.h // 1.70 + self.parchment_image.rect.y)
+        self.login_button.set_position(login_button_pos)
+        self.login_button_hover.set_position(login_button_pos)
+        self.buttons.append(self.login_button)
+        self.blit(self.login_button, self.login_button.rect.topleft)
+
+    def event_handler(self, event):
+        self.button_event_handler(event)
+
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_RETURN:
+                self.login()
+
+        self.input_box_username.handle_event(event)
+
+        # refresh parchment then draw input boxes above and login button
+        self.blit(self.parchment_image, self.parchment_image.rect.topleft)
+        self.input_box_username.draw(self)
+
+        if self.login_button.hover:
+            self.blit(self.login_button_hover, self.login_button.rect.topleft)
+        else:
+            self.blit(self.login_button, self.login_button.rect.topleft)
+
+    def login(self):
+        self.n -= 1
+        self.guests.append(Player(self.input_box_username.text))
+        self.input_box_username.text = ""
+        self.input_box_username.change_under_text(f"Guest {len(self.guests) + 1} Username")
+        self.input_box_username.update_text_surface()
+        if self.n == 0:
+            pygame.event.post(pygame.event.Event(CHANGE_TO_CHOOSE_BOARD, gamemode="multi_player", guests=self.guests))
+
+
+class EndGameMenu(MenuBackground):
+    def __init__(self, size):
+        super().__init__(size, pre_menu_event=CHANGE_TO_GAMEMODE)
+        self.size = size
+
+        # rotate parchment
+        self.parchment_image = self.parchment_image.rotate(90)
+
+        # resize parchment
+        scale_factor = size[0] // 2.5 / self.parchment_image.rect.w
+        self.parchment_image = self.parchment_image.resize(scale_factor)
+
+        # change parchment position
+        parchment_pos = (
+            size[0] // 2 - self.parchment_image.rect.w // 2, size[1] // 2 - self.parchment_image.rect.h // 3)
+        self.parchment_image.set_position(parchment_pos)
+
+        # refresh background to cover old parchment and blit it above
+        self.blit_background()
+
+    def show_results(self, players):
+        self.blit_background()
+        font = pygame.font.Font('assets/fonts/ShinyCrystal.ttf', 55)
+        # show the gold of each player if his boat wasn't destroyed else show dead
+        for i, player in enumerate(players):
+            if player.boat_destroyed:
+                player.gold = "Dead"
+            else:
+                player.gold = f"{player.gold} Gold"
+            print(player.username, player.gold)
+            text = f'{player.username} {player.gold}'
+            text = font.render(text, True, (0, 0, 0))
+            position = (self.parchment_image.rect.x + self.parchment_image.rect.w * 0.5 - text.get_width() * 0.5,
+                        self.parchment_image.rect.y * 1 + self.parchment_image.rect.h * 0.3 + text.get_height() * 1.5 * i)
+            self.blit(text, position)
+
     def event_handler(self, event):
         self.button_event_handler(event)

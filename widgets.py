@@ -76,6 +76,7 @@ class InputBox:
         self.font = pygame.font.Font(None, 48)
         self.under_text_font = pygame.font.Font(None, 48)
         self.txt_surface = self.font.render(text, True, self.color)
+        self.under_text = under_text
         self.under_text_surface = self.under_text_font.render(under_text, True, self.under_text_color)
         self.active = False
         self.wrong_input = False
@@ -123,6 +124,10 @@ class InputBox:
 
     def update_text_surface(self):
         self.txt_surface = self.font.render(self.text, True, self.color)
+
+    def change_under_text(self, text: str):
+        self.under_text = text
+        self.under_text_surface = self.under_text_font.render(text, True, self.under_text_color)
 
 
 class Carousel(pygame.Surface):
@@ -214,6 +219,7 @@ class Carousel(pygame.Surface):
 
     def next(self):
         self.current_board = self.current_board + 1 if self.current_board + 1 < len(self.buttons_side) else 0
+        print(self.current_board)
 
         self.left = self.side_carousel_next[self.left.hashed]
         self.center = self.center_carousel_next[self.center.hashed]
@@ -229,7 +235,8 @@ class Carousel(pygame.Surface):
         self.blit(self.right, self.right.rect.topleft)
 
     def previous(self):
-        self.current_board = self.current_board - 1 if self.current_board - 1 > -1 else len(self.buttons_side)
+        self.current_board = self.current_board - 1 if self.current_board - 1 > -1 else len(self.buttons_side) - 1
+        print(self.current_board)
 
         self.left = self.side_carousel_previous[self.left.hashed]
         self.center = self.center_carousel_previous[self.center.hashed]
@@ -376,26 +383,36 @@ class Carousel(pygame.Surface):
 
 
 class Number(pygame.Surface):
-    def __init__(self, number: int):
+    def __init__(self, number: int, img=None):
         self.number = number
-        images = []
-        for x in str(number):
-            image = pygame.image.load(f"assets/numbers/{x}.png").convert_alpha()
-            images.append(image)
 
-        total_width = sum([image.get_width() for image in images])
-        total_height = images[0].get_height()
+        if img is not None:
+            super().__init__(img.get_size(), pygame.SRCALPHA, 32)
+            self.blit(img, (0, 0))
+            self.rect = self.get_rect()
 
-        super().__init__((total_width, total_height), pygame.SRCALPHA, 32)
-        self.rect = self.get_rect()
+        else:
+            images = []
+            for x in str(number):
+                image = pygame.image.load(f"assets/numbers/{x}.png").convert_alpha()
+                images.append(image)
 
-        w = 0
-        for image in images:
-            self.blit(image, (w, 0))
-            w += image.get_width()
+            total_width = sum([image.get_width() for image in images])
+            total_height = images[0].get_height()
+
+            super().__init__((total_width, total_height), pygame.SRCALPHA, 32)
+            self.rect = self.get_rect()
+
+            w = 0
+            for image in images:
+                self.blit(image, (w, 0))
+                w += image.get_width()
 
     def resize(self, scale_factor: float | int):
         w, h = self.get_size()
         new_w, new_h = w * scale_factor, h * scale_factor
         img = pygame.transform.scale(self, [new_w, new_h])
-        return Image(img, convert_alpha=True)
+        return Number(self.number, img)
+
+    def set_position(self, position: tuple[float, float]):
+        self.rect.topleft = position

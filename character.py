@@ -1,11 +1,9 @@
-from tile import Tile
-
 class Character:
     def __init__(self, character_id, active_effect, end_effect):
         self.character_id = character_id
         self.active_effect = active_effect
         self.end_effect = end_effect
-        self.counter == 16
+        self.counter = 16
 
     def active_effect(self, player, game, tile):
         if self.active_effect == "treasure_map":
@@ -42,7 +40,7 @@ class Character:
                     flippable_tiles.append((tile.x+1, tile.y))
             return flippable_tiles
         if self.active_effect == "parrot_act":
-
+            pass
 
     def end_effect(self, player, game, board):
         if self.end_effect == "gunboat_end":
@@ -61,15 +59,16 @@ class Character:
             if board.cabin_boy_on_board_counter == 1:
                 player.gold += 1
 
-mapper = Character(1,"treasure_map", None) # Done
-navigator = Character(2,"navigator_act",None) # Done
-cooker = Character(3,"cooker_act", None) # Done
-gunboat = Character(4,"gunboat_act", "gunboat_end") # Done
-monkey = Character(5, "monkey_act", None)
-parrot = Character(6, "parrot_act", "parrot_end")
-cabin_boy = Character(7,None, "cabin_boy_end") # Done
-carpenter= Character(8, None, None)
-guard = Character(9, None, None)
+
+mapper = Character(0, "treasure_map", None)  # Done
+navigator = Character(1, "navigator_act",None)  # Done
+cooker = Character(2, "cooker_act", None)  # Done
+gunboat = Character(3, "gunboat_act", "gunboat_end")  # Done
+monkey = Character(4, "monkey_act", None)
+parrot = Character(5, "parrot_act", "parrot_end")
+cabin_boy = Character(6, None, "cabin_boy_end")  # Done
+carpenter = Character(7, None, None)
+guard = Character(8, None, None)
 
 
 
