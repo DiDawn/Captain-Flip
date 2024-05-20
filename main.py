@@ -152,13 +152,17 @@ while running:
             winner = players2[0]
             if winner == player:
                 Database.add_victory("database.csv", player.username)
+                player.stats = (str(int(player.stats[0]) + 1), player.stats[1], player.stats[2])
             else:
                 for pl in players2:
                     if pl == player:
                         if pl.gold == winner.gold:
                             Database.add_draw("database.csv", player.username)
+                            player.stats = (player.stats[0], str(int(player.stats[1]) + 1), player.stats[2])
                         else:
                             Database.add_defeat("database.csv", player.username)
+                            player.stats = (player.stats[0], player.stats[1], str(int(player.stats[2]) + 1))
+            stats_menu.update_stats(player.stats)
 
             game_state = END_GAME_MENU
             current_menu = end_game_menu

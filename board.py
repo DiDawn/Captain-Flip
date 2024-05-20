@@ -67,7 +67,7 @@ class BoardManager:
         self.mode = "solo" if len(players) == 1 else "multi"
         self.players = players
         self.columns_active_effects_used = [False] * 5
-        self.column3_already_filled = False
+        self.column2_already_filled = False
         if self.mode == "solo":
             self.solo_column_completion = 0
 
@@ -128,7 +128,7 @@ class BoardManager:
 
         con1 = tile.tile_manager.active_character.character_id != 4
         con2 = tile.tile_manager.active_character.character_id != 5
-        con3 = self.board_number == 4 and column_number == 3 and self.columns[3].is_full() and not self.column3_already_filled
+        con3 = self.board_number == 4 and column_number == 2 and self.columns[2].is_full() and not self.column2_already_filled
         if con1 and con2 and not con3:
             pygame.event.post(pygame.event.Event(END_TURN))
         if tile.tile_manager.active_character.character_id == 5:
@@ -355,7 +355,7 @@ class BoardManager:
 
         elif effect == "draw_new_card_if_same_crew":
             if self.columns[column_number].same_character():
-                self.column3_already_filled = True
+                self.column2_already_filled = True
                 pygame.event.post(pygame.event.Event(PARROT_ACT))
 
         pygame.event.post(pygame.event.Event(COLUMN_ACTIVE_EFFECT_USED, column_number=column_number))

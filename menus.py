@@ -767,7 +767,7 @@ class ChooseNumberOfPlayersMenu(MenuBackground):
 
         self.numbers = []
         # init the numbers
-        for i in range(2, 6):
+        for i in range(2, 5):
             self.numbers.append(Number(i))
 
         # resize numbers
@@ -777,7 +777,7 @@ class ChooseNumberOfPlayersMenu(MenuBackground):
         print(self.numbers)
 
         # set positions of the numbers
-        number_pos = (self.parchment_image.rect.x * 1.2, size[1] * 0.6 - self.numbers[0].rect.h // 2)
+        number_pos = (self.parchment_image.rect.x * 1.3, size[1] * 0.6 - self.numbers[0].rect.h // 2)
         for number in self.numbers:
             number.set_position(number_pos)
             number_pos = (number_pos[0] + number.rect.w * 2, number_pos[1])
